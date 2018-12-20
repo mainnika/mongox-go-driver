@@ -20,3 +20,8 @@ type BaseObjectID interface {
 	GetID() primitive.ObjectID
 	SetID(id primitive.ObjectID)
 }
+
+type BaseString interface {
+	GetID() string
+	SetID(id string)
+}
