@@ -33,15 +33,10 @@ func LoadArray(db *mongox.Database, target interface{}, composed *query.Query) e
 
 	dummy := reflect.Zero(targetSliceElemT)
 	collection := db.GetCollectionOf(dummy.Interface())
-	opts := &options.FindOptions{}
+	opts := options.Find()
 
-	if composed.Sorter() != nil {
-		opts.Sort = composed.Sorter().Sort()
-	}
-	if composed.Limiter() != nil {
-		limit := int64(composed.Limiter().Limit())
-		opts.Limit = &limit
-	}
+	opts.Sort = composed.Sorter()
+	opts.Limit = composed.Limiter()
 
 	result, err := collection.Find(db.Context(), composed.M(), opts)
 	if err != nil {

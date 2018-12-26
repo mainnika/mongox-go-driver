@@ -12,11 +12,9 @@ import (
 func LoadOne(db *mongox.Database, target interface{}, composed *query.Query) error {
 
 	collection := db.GetCollectionOf(target)
-	opts := &options.FindOneOptions{}
+	opts := options.FindOne()
 
-	if composed.Sorter() != nil {
-		opts.Sort = composed.Sorter().Sort()
-	}
+	opts.Sort = composed.Sorter()
 
 	result := collection.FindOne(db.Context(), composed.M(), opts)
 	if result.Err() != nil {

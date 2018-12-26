@@ -44,15 +44,10 @@ func (l *ManyLoader) Close() error {
 func LoadMany(db *mongox.Database, target interface{}, composed *query.Query) (*ManyLoader, error) {
 
 	collection := db.GetCollectionOf(target)
-	opts := &options.FindOptions{}
+	opts := options.Find()
 
-	if composed.Sorter() != nil {
-		opts.Sort = composed.Sorter().Sort()
-	}
-	if composed.Limiter() != nil {
-		limit := int64(composed.Limiter().Limit())
-		opts.Limit = &limit
-	}
+	opts.Sort = composed.Sorter()
+	opts.Limit = composed.Limiter()
 
 	cursor, err := collection.Find(db.Context(), composed.M(), opts)
 	if err != nil {

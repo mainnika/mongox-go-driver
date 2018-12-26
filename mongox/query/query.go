@@ -32,16 +32,24 @@ func (q *Query) And(elem bson.M) *Query {
 	return q
 }
 
-// Limiter is a limit function for a query
-func (q *Query) Limiter() Limiter {
+// Limiter returns limiter value or nil
+func (q *Query) Limiter() *int64 {
 
-	return q.limiter
+	if q.limiter == nil {
+		return nil
+	}
+
+	return q.limiter.Limit()
 }
 
 // Sorter is a sort rule for a query
-func (q *Query) Sorter() Sorter {
+func (q *Query) Sorter() interface{} {
 
-	return q.sorter
+	if q.sorter == nil {
+		return nil
+	}
+
+	return q.sorter.Sort()
 }
 
 // Empty checks the query for any content
@@ -55,6 +63,5 @@ func (q *Query) Empty() bool {
 
 // M returns underlying query map
 func (q *Query) M() bson.M {
-
 	return q.m
 }

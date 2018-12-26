@@ -2,9 +2,9 @@ package common
 
 import (
 	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 )
 
@@ -12,7 +12,7 @@ import (
 func SaveOne(db *mongox.Database, source interface{}) error {
 
 	collection := db.GetCollectionOf(source)
-	opts := &options.FindOneAndReplaceOptions{}
+	opts := options.FindOneAndReplace()
 	id := base.GetID(source)
 
 	opts.SetUpsert(true)
