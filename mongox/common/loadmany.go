@@ -41,10 +41,11 @@ func (l *ManyLoader) Close() error {
 }
 
 // LoadMany function loads documents one by one into a target channel
-func LoadMany(db *mongox.Database, target interface{}, composed *query.Query) (*ManyLoader, error) {
+func LoadMany(db *mongox.Database, target interface{}, filters ...interface{}) (*ManyLoader, error) {
 
 	collection := db.GetCollectionOf(target)
 	opts := options.Find()
+	composed := query.Compose(filters...)
 
 	opts.Sort = composed.Sorter()
 	opts.Limit = composed.Limiter()

@@ -9,10 +9,11 @@ import (
 )
 
 // LoadOne function loads a first single target document by a query
-func LoadOne(db *mongox.Database, target interface{}, composed *query.Query) error {
+func LoadOne(db *mongox.Database, target interface{}, filters ...interface{}) error {
 
 	collection := db.GetCollectionOf(target)
 	opts := options.FindOne()
+	composed := query.Compose(filters...)
 
 	opts.Sort = composed.Sorter()
 

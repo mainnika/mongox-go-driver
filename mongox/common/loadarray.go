@@ -10,7 +10,7 @@ import (
 )
 
 // LoadArray loads an array of documents from the database by query
-func LoadArray(db *mongox.Database, target interface{}, composed *query.Query) error {
+func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) error {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -34,6 +34,7 @@ func LoadArray(db *mongox.Database, target interface{}, composed *query.Query) e
 	dummy := reflect.Zero(targetSliceElemT)
 	collection := db.GetCollectionOf(dummy.Interface())
 	opts := options.Find()
+	composed := query.Compose(filters...)
 
 	opts.Sort = composed.Sorter()
 	opts.Limit = composed.Limiter()
