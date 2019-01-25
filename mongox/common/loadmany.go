@@ -49,6 +49,7 @@ func LoadMany(db *mongox.Database, target interface{}, filters ...interface{}) (
 
 	opts.Sort = composed.Sorter()
 	opts.Limit = composed.Limiter()
+	opts.Skip = composed.Skipper()
 
 	cursor, err := collection.Find(db.Context(), composed.M(), opts)
 	if err != nil {

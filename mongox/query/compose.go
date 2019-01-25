@@ -45,6 +45,8 @@ func applyLimits(q *Query, f interface{}) bool {
 		q.limiter = f
 	case Sorter:
 		q.sorter = f
+	case Skipper:
+		q.skipper = f
 	default:
 		return false
 	}

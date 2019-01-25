@@ -11,6 +11,7 @@ type Query struct {
 	m       bson.M
 	limiter Limiter
 	sorter  Sorter
+	skipper Skipper
 }
 
 // And function pushes the elem query to the $and array of the query
@@ -50,6 +51,16 @@ func (q *Query) Sorter() interface{} {
 	}
 
 	return q.sorter.Sort()
+}
+
+// Skipper is a skipper for a query
+func (q *Query) Skipper() *int64 {
+
+	if q.skipper == nil {
+		return nil
+	}
+
+	return q.skipper.Skip()
 }
 
 // Empty checks the query for any content
