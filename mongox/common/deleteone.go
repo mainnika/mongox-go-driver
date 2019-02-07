@@ -21,6 +21,10 @@ func DeleteOne(db *mongox.Database, target interface{}, filters ...interface{}) 
 
 	opts.Sort = composed.Sorter()
 
+	if target != nil {
+		composed.And(primitive.M{"_id": base.GetID(target)})
+	}
+
 	if protected != nil {
 		if protected.X.IsZero() {
 			composed.And(primitive.M{"_x": primitive.M{"$exists": false}})
