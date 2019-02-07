@@ -1,8 +1,10 @@
 package query
 
 import (
+	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 )
 
 // ComposeQuery is a function to compose filters into a single query
@@ -11,19 +13,25 @@ func Compose(filters ...interface{}) *Query {
 	q := &Query{}
 
 	for _, f := range filters {
-
-		ok := false
-		ok = ok || applyBson(q, f)
-		ok = ok || applyLimit(q, f)
-		ok = ok || applySort(q, f)
-		ok = ok || applySkip(q, f)
-
-		if !ok {
+		if !Push(q, f) {
 			panic(errors.InternalErrorf("unknown filter %v", f))
 		}
 	}
 
 	return q
+}
+
+// Push applies single filter to a query
+func Push(q *Query, f interface{}) bool {
+
+	ok := false
+	ok = ok || applyBson(q, f)
+	ok = ok || applyLimit(q, f)
+	ok = ok || applySort(q, f)
+	ok = ok || applySkip(q, f)
+	ok = ok || applyProtection(q, f)
+
+	return ok
 }
 
 // applyBson is a fallback for a custom bson.M
@@ -68,4 +76,35 @@ func applySkip(q *Query, f interface{}) bool {
 	}
 
 	return false
+}
+
+func applyProtection(q *Query, f interface{}) bool {
+
+	var x *primitive.ObjectID
+	var v *int64
+
+	switch f := f.(type) {
+	case base.Protection:
+		x = &f.X
+		v = &f.V
+	case *base.Protection:
+		if f == nil {
+			return false
+		}
+		x = &f.X
+		v = &f.V
+
+	default:
+		return false
+	}
+
+	if x.IsZero() {
+		q.And(primitive.M{"_x": primitive.M{"$exists": false}})
+		q.And(primitive.M{"_v": primitive.M{"$exists": false}})
+	} else {
+		q.And(primitive.M{"_x": *x})
+		q.And(primitive.M{"_v": *v})
+	}
+
+	return true
 }

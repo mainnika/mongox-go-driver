@@ -26,14 +26,7 @@ func DeleteOne(db *mongox.Database, target interface{}, filters ...interface{}) 
 	}
 
 	if protected != nil {
-		if protected.X.IsZero() {
-			composed.And(primitive.M{"_x": primitive.M{"$exists": false}})
-			composed.And(primitive.M{"_v": primitive.M{"$exists": false}})
-		} else {
-			composed.And(primitive.M{"_x": protected.X})
-			composed.And(primitive.M{"_v": protected.V})
-		}
-
+		query.Push(composed, protected)
 		protected.X = primitive.NewObjectID()
 		protected.V = time.Now().Unix()
 	}
