@@ -12,7 +12,7 @@ import (
 
 // ManyLoader is a controller for a database cursor
 type ManyLoader struct {
-	mongo.Cursor
+	*mongo.Cursor
 	ctx    context.Context
 	target interface{}
 }
