@@ -53,6 +53,8 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 			elem := reflect.New(targetSliceElemT.Elem())
 			if result.Decode(elem.Interface()) != nil {
 				targetSliceV = reflect.Append(targetSliceV, elem)
+			} else {
+				continue
 			}
 		} else {
 			result.Decode(targetSliceV.Index(i).Interface())
