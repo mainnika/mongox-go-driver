@@ -48,19 +48,17 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 	defer result.Close(db.Context())
 	var i int
 
-	for i = 0; result.Next(db.Context()); i++ {
+	for i = 0; result.Next(db.Context()); {
 		if targetSliceV.Len() == i {
 			elem := reflect.New(targetSliceElemT.Elem())
 			if result.Decode(elem.Interface()) != nil {
-				continue
+				targetSliceV = reflect.Append(targetSliceV, elem)
 			}
-
-			targetSliceV = reflect.Append(targetSliceV, elem)
-			// currentv = currentv.Slice(0, currentv.Cap())
-			continue
+		} else {
+			result.Decode(targetSliceV.Index(i).Interface())
 		}
 
-		result.Decode(targetSliceV.Index(i).Interface())
+		i++
 	}
 
 	targetSliceV = targetSliceV.Slice(0, i)
