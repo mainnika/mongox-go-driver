@@ -51,13 +51,13 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 	for i = 0; result.Next(db.Context()); {
 		if targetSliceV.Len() == i {
 			elem := reflect.New(targetSliceElemT.Elem())
-			if result.Decode(elem.Interface()) != nil {
+			if err = result.Decode(elem.Interface()); err == nil {
 				targetSliceV = reflect.Append(targetSliceV, elem)
 			} else {
 				continue
 			}
-		} else {
-			result.Decode(targetSliceV.Index(i).Interface())
+		} else if err = result.Decode(targetSliceV.Index(i).Interface()); err != nil {
+			continue
 		}
 
 		i++
