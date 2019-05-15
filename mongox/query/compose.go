@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// ComposeQuery is a function to compose filters into a single query
+// Compose is a function to compose filters into a single query
 func Compose(filters ...interface{}) *Query {
 
 	q := &Query{}
