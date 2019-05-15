@@ -4,8 +4,8 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Count function counts documents in the database by query
@@ -19,7 +19,7 @@ func Count(db *mongox.Database, target interface{}, filters ...interface{}) (int
 	opts.Limit = composed.Limiter()
 	opts.Skip = composed.Skipper()
 
-	result, err := collection.Count(db.Context(), composed.M(), opts)
+	result, err := collection.CountDocuments(db.Context(), composed.M(), opts)
 	if err == mongo.ErrNoDocuments {
 		return 0, errors.NotFoundErrorf("%s", err)
 	}

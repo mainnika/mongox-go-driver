@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var _ mongox.BaseObjectID = &ObjectID{}

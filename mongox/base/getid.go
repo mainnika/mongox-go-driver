@@ -3,7 +3,7 @@ package base
 import (
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // GetID returns source document id

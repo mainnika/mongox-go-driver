@@ -1,14 +1,15 @@
 package common
 
 import (
+	"time"
+
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
-	"time"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // SaveOne saves a single source document to the database

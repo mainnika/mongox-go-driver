@@ -1,14 +1,15 @@
 package common
 
 import (
+	"time"
+
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
-	"time"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // DeleteOne removes a document from a database and then returns it into target

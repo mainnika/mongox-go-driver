@@ -1,7 +1,7 @@
 package query
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Sorter is a filter to sort the data before query

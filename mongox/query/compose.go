@@ -3,8 +3,8 @@ package query
 import (
 	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // ComposeQuery is a function to compose filters into a single query

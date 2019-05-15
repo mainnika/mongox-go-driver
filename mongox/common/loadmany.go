@@ -6,8 +6,8 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ManyLoader is a controller for a database cursor
