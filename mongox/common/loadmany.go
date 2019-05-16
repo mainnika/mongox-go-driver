@@ -7,7 +7,6 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // ManyLoader is a controller for a database cursor
@@ -43,15 +42,17 @@ func (l *ManyLoader) Close() error {
 // LoadMany function loads documents one by one into a target channel
 func LoadMany(db *mongox.Database, target interface{}, filters ...interface{}) (*ManyLoader, error) {
 
-	collection := db.GetCollectionOf(target)
-	opts := options.Find()
+	var cursor *mongo.Cursor
+	var err error
+
 	composed := query.Compose(filters...)
+	hasPreloader, _ := composed.Preloader()
 
-	opts.Sort = composed.Sorter()
-	opts.Limit = composed.Limiter()
-	opts.Skip = composed.Skipper()
-
-	cursor, err := collection.Find(db.Context(), composed.M(), opts)
+	if hasPreloader {
+		cursor, err = createAggregateLoad(db, target, composed)
+	} else {
+		cursor, err = createSimpleLoad(db, target, composed)
+	}
 	if err != nil {
 		return nil, errors.InternalErrorf("can't create find result: %s", err)
 	}

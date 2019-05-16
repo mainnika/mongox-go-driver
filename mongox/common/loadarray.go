@@ -6,7 +6,7 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // LoadArray loads an array of documents from the database by query
@@ -31,16 +31,17 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 		panic(errors.InternalErrorf("target slice should contain ptrs"))
 	}
 
-	dummy := reflect.Zero(targetSliceElemT)
-	collection := db.GetCollectionOf(dummy.Interface())
-	opts := options.Find()
 	composed := query.Compose(filters...)
+	hasPreloader, _ := composed.Preloader()
 
-	opts.Sort = composed.Sorter()
-	opts.Limit = composed.Limiter()
-	opts.Skip = composed.Skipper()
+	var result *mongo.Cursor
+	var err error
 
-	result, err := collection.Find(db.Context(), composed.M(), opts)
+	if hasPreloader {
+		result, err = createAggregateLoad(db, target, composed)
+	} else {
+		result, err = createSimpleLoad(db, target, composed)
+	}
 	if err != nil {
 		return errors.InternalErrorf("can't create find result: %s", err)
 	}
