@@ -16,10 +16,10 @@ type ManyLoader struct {
 	target interface{}
 }
 
-// Get loads documents to a target or returns an error
-func (l *ManyLoader) Get() error {
+// GetNext loads next documents to a target or returns an error
+func (l *ManyLoader) GetNext() error {
 
-	hasNext := l.Next(l.ctx)
+	hasNext := l.Cursor.Next(l.ctx)
 
 	if !hasNext {
 		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
