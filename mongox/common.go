@@ -19,6 +19,11 @@ type Loader interface {
 	Load(db *Database, filters ...interface{}) error
 }
 
+// Resetter is an interface for documenta that can be resetted
+type Resetter interface {
+	Reset()
+}
+
 // BaseObjectID is an interface for documents that have objectId type for the _id field
 type BaseObjectID interface {
 	GetID() primitive.ObjectID

@@ -25,6 +25,11 @@ func (l *ManyLoader) Get() error {
 		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
 	}
 
+	resettable, canReset := l.target.(mongox.Resetter)
+	if canReset {
+		resettable.Reset()
+	}
+
 	err := l.Decode(l.target)
 	if err != nil {
 		return errors.InternalErrorf("can't decode desult: %s", err)
