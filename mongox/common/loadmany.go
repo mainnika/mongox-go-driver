@@ -38,6 +38,17 @@ func (l *ManyLoader) GetNext() error {
 	return nil
 }
 
+// Next loads next documents but doesn't perform decoding
+func (l *ManyLoader) Next() error {
+
+	hasNext := l.Cursor.Next(l.ctx)
+	if !hasNext {
+		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
+	}
+
+	return nil
+}
+
 // Close cursor
 func (l *ManyLoader) Close() error {
 
