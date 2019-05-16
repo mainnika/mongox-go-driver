@@ -5,30 +5,30 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // LoadOne function loads a first single target document by a query
 func LoadOne(db *mongox.Database, target interface{}, filters ...interface{}) error {
 
-	collection := db.GetCollectionOf(target)
-	opts := options.FindOne()
-	composed := query.Compose(filters...)
+	composed := query.Compose(append(filters, query.Limit(1))...)
+	hasPreloader, _ := composed.Preloader()
 
-	opts.Sort = composed.Sorter()
+	var result *mongo.Cursor
+	var err error
 
-	result := collection.FindOne(db.Context(), composed.M(), opts)
-	if result.Err() != nil {
-		return errors.InternalErrorf("can't create find one result: %s", result.Err())
-	}
-
-	err := result.Decode(target)
-	if err == mongo.ErrNoDocuments {
-		return errors.NotFoundErrorf("%s", err)
+	if hasPreloader {
+		result, err = createAggregateLoad(db, target, composed)
+	} else {
+		result, err = createSimpleLoad(db, target, composed)
 	}
 	if err != nil {
-		return errors.InternalErrorf("can't decode desult: %s", err)
+		return errors.InternalErrorf("can't create find result: %s", err)
 	}
 
-	return nil
+	hasNext := result.Next(db.Context())
+	if !hasNext {
+		return errors.NotFoundErrorf("can't find result: %s", result.Err())
+	}
+
+	return result.Decode(target)
 }
