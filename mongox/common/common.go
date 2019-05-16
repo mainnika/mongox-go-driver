@@ -89,10 +89,15 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 		}
 
 		preloadLimiter := 100
+		preloadReversed := false
 		if len(preloadData) > 2 {
-
 			stringLimit := strings.TrimSpace(preloadData[2])
 			intLimit := preloadLimiter
+
+			preloadReversed = strings.HasPrefix(stringLimit, "-")
+			if preloadReversed {
+				stringLimit = stringLimit[1:]
+			}
 
 			intLimit, err = strconv.Atoi(stringLimit)
 			if err == nil {
@@ -120,6 +125,9 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 				primitive.M{"$match": primitive.M{"$expr": primitive.M{"$eq": primitive.A{"$" + foreignField, "$$selector"}}}},
 			}
 
+			if preloadReversed {
+				lookupPipeline = append(lookupPipeline, primitive.M{"$sort": primitive.M{"_id": -1}})
+			}
 			if isSlice && preloadLimiter > 0 {
 				lookupPipeline = append(lookupPipeline, primitive.M{"$limit": preloadLimiter})
 			} else if !isSlice {
