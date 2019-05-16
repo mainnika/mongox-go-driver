@@ -30,8 +30,20 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 	collection := db.GetCollectionOf(target)
 	opts := options.Aggregate()
 
-	pipelineHead := primitive.A{primitive.M{"$match": composed.M()}}
-	pipelineTail := primitive.A{}
+	pipeline := primitive.A{}
+
+	if !composed.Empty() {
+		pipeline = append(pipeline, primitive.M{"$match": primitive.M{"$expr": composed.M()}})
+	}
+	if composed.Sorter() != nil {
+		pipeline = append(pipeline, primitive.M{"$sort": composed.Sorter()})
+	}
+	if composed.Skipper() != nil {
+		pipeline = append(pipeline, primitive.M{"$skip": *composed.Skipper()})
+	}
+	if composed.Limiter() != nil {
+		pipeline = append(pipeline, primitive.M{"$limit": *composed.Limiter()})
+	}
 
 	el := reflect.ValueOf(target).Elem()
 	elType := el.Type()
@@ -114,7 +126,7 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 				lookupPipeline = append(lookupPipeline, primitive.M{"$limit": 1})
 			}
 
-			pipelineTail = append(pipelineTail, primitive.M{
+			pipeline = append(pipeline, primitive.M{
 				"$lookup": primitive.M{
 					"from":     lookupCollection.Name(),
 					"let":      lookupVars,
@@ -127,7 +139,7 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 				continue
 			}
 
-			pipelineTail = append(pipelineTail, primitive.M{
+			pipeline = append(pipeline, primitive.M{
 				"$unwind": primitive.M{
 					"preserveNullAndEmptyArrays": true,
 					"path":                       "$" + jsonName,
@@ -136,5 +148,5 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 		}
 	}
 
-	return collection.Aggregate(db.Context(), append(pipelineHead, pipelineTail...), opts)
+	return collection.Aggregate(db.Context(), pipeline, opts)
 }
