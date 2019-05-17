@@ -78,9 +78,9 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 			panic("there is no foreign field")
 		}
 
-		preloadName := strings.TrimSpace(preloadData[0])
-		if len(preloadName) == 0 {
-			preloadName = jsonName
+		localField := strings.TrimSpace(preloadData[0])
+		if len(localField) == 0 {
+			localField = "_id"
 		}
 
 		foreignField := strings.TrimSpace(preloadData[1])
@@ -106,7 +106,7 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 		}
 
 		for _, preload := range preloads {
-			if preload != preloadName {
+			if preload != jsonName {
 				continue
 			}
 
@@ -119,9 +119,8 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 
 			typ := el.Field(i).Type()
 			lookupCollection := db.GetCollectionOf(reflect.Zero(typ).Interface())
-			lookupVars := primitive.M{"selector": "$_id"}
+			lookupVars := primitive.M{"selector": "$" + localField}
 			lookupPipeline := primitive.A{
-				// todo: make match from composed query
 				primitive.M{"$match": primitive.M{"$expr": primitive.M{"$eq": primitive.A{"$" + foreignField, "$$selector"}}}},
 			}
 
