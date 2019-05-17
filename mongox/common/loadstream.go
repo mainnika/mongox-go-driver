@@ -9,15 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// ManyLoader is a controller for a database cursor
-type ManyLoader struct {
+// StreamLoader is a controller for a database cursor
+type StreamLoader struct {
 	*mongo.Cursor
 	ctx    context.Context
 	target interface{}
 }
 
-// GetNext loads next documents to a target or returns an error
-func (l *ManyLoader) GetNext() error {
+// DecodeNext loads next documents to a target or returns an error
+func (l *StreamLoader) DecodeNext() error {
 
 	hasNext := l.Cursor.Next(l.ctx)
 
@@ -39,7 +39,7 @@ func (l *ManyLoader) GetNext() error {
 }
 
 // Next loads next documents but doesn't perform decoding
-func (l *ManyLoader) Next() error {
+func (l *StreamLoader) Next() error {
 
 	hasNext := l.Cursor.Next(l.ctx)
 	if !hasNext {
@@ -50,13 +50,13 @@ func (l *ManyLoader) Next() error {
 }
 
 // Close cursor
-func (l *ManyLoader) Close() error {
+func (l *StreamLoader) Close() error {
 
 	return l.Cursor.Close(l.ctx)
 }
 
-// LoadMany function loads documents one by one into a target channel
-func LoadMany(db *mongox.Database, target interface{}, filters ...interface{}) (*ManyLoader, error) {
+// LoadStream function loads documents one by one into a target channel
+func LoadStream(db *mongox.Database, target interface{}, filters ...interface{}) (*StreamLoader, error) {
 
 	var cursor *mongo.Cursor
 	var err error
@@ -73,7 +73,7 @@ func LoadMany(db *mongox.Database, target interface{}, filters ...interface{}) (
 		return nil, errors.InternalErrorf("can't create find result: %s", err)
 	}
 
-	l := &ManyLoader{Cursor: cursor, ctx: db.Context(), target: target}
+	l := &StreamLoader{Cursor: cursor, ctx: db.Context(), target: target}
 
 	return l, nil
 }
