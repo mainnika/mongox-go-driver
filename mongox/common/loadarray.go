@@ -32,15 +32,16 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 	}
 
 	composed := query.Compose(filters...)
+	zeroElem := reflect.Zero(targetSliceElemT)
 	hasPreloader, _ := composed.Preloader()
 
 	var result *mongo.Cursor
 	var err error
 
 	if hasPreloader {
-		result, err = createAggregateLoad(db, target, composed)
+		result, err = createAggregateLoad(db, zeroElem.Interface(), composed)
 	} else {
-		result, err = createSimpleLoad(db, target, composed)
+		result, err = createSimpleLoad(db, zeroElem.Interface(), composed)
 	}
 	if err != nil {
 		return errors.InternalErrorf("can't create find result: %s", err)
