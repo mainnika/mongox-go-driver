@@ -110,14 +110,16 @@ func createAggregateLoad(db *mongox.Database, target interface{}, composed *quer
 				continue
 			}
 
-			isPtr := el.Field(i).Kind() == reflect.Ptr
 			isSlice := el.Field(i).Kind() == reflect.Slice
-			isIface := el.Field(i).CanInterface()
-			if (!isPtr && !isSlice) || !isIface {
-				continue
-			}
 
 			typ := el.Field(i).Type()
+			if typ.Kind() == reflect.Slice {
+				typ = typ.Elem()
+			}
+			if typ.Kind() != reflect.Ptr {
+				panic("preload field should have ptr type")
+			}
+
 			lookupCollection := db.GetCollectionOf(reflect.Zero(typ).Interface())
 			lookupVars := primitive.M{"selector": "$" + localField}
 			lookupPipeline := primitive.A{
