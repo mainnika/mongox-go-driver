@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -58,8 +59,12 @@ func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) 
 			} else {
 				continue
 			}
-		} else if err = result.Decode(targetSliceV.Index(i).Interface()); err != nil {
-			continue
+		} else {
+			elem := targetSliceV.Index(i).Interface()
+			base.Reset(elem)
+			if err = result.Decode(elem); err != nil {
+				continue
+			}
 		}
 
 		i++

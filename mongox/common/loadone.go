@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,6 +30,8 @@ func LoadOne(db *mongox.Database, target interface{}, filters ...interface{}) er
 	if !hasNext {
 		return errors.NotFoundErrorf("can't find result: %s", result.Err())
 	}
+
+	base.Reset(target)
 
 	return result.Decode(target)
 }
