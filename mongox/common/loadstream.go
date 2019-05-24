@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/mongox/base"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,10 +26,7 @@ func (l *StreamLoader) DecodeNext() error {
 		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
 	}
 
-	resettable, canReset := l.target.(mongox.Resetter)
-	if canReset {
-		resettable.Reset()
-	}
+	base.Reset(l.target)
 
 	err := l.Decode(l.target)
 	if err != nil {
