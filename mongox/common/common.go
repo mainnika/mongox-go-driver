@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mainnika/mongox-go-driver/mongox/query"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/mongox/errors"
+	"github.com/mainnika/mongox-go-driver/mongox/query"
 )
 
 func createSimpleLoad(db *mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {

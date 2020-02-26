@@ -1,8 +1,9 @@
 package base
 
 import (
-	"github.com/mainnika/mongox-go-driver/mongox"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/mainnika/mongox-go-driver/mongox"
 )
 
 var _ mongox.BaseObject = &Object{}

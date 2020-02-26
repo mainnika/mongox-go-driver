@@ -4,8 +4,9 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
 	"go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/mainnika/mongox-go-driver/mongox/errors"
 )
 
 // Database handler
