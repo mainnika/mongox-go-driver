@@ -10,7 +10,7 @@ import (
 )
 
 // LoadOne function loads a first single target document by a query
-func LoadOne(db *mongox.Database, target interface{}, filters ...interface{}) error {
+func LoadOne(db mongox.Database, target interface{}, filters ...interface{}) error {
 
 	composed := query.Compose(append(filters, query.Limit(1))...)
 	hasPreloader, _ := composed.Preloader()

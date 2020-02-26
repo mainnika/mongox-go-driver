@@ -14,7 +14,7 @@ import (
 )
 
 // DeleteOne removes a document from a database and then returns it into target
-func DeleteOne(db *mongox.Database, target interface{}, filters ...interface{}) error {
+func DeleteOne(db mongox.Database, target interface{}, filters ...interface{}) error {
 
 	collection := db.GetCollectionOf(target)
 	opts := &options.FindOneAndDeleteOptions{}

@@ -55,7 +55,7 @@ func (l *StreamLoader) Close() error {
 }
 
 // LoadStream function loads documents one by one into a target channel
-func LoadStream(db *mongox.Database, target interface{}, filters ...interface{}) (*StreamLoader, error) {
+func LoadStream(db mongox.Database, target interface{}, filters ...interface{}) (*StreamLoader, error) {
 
 	var cursor *mongo.Cursor
 	var err error

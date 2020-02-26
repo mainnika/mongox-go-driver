@@ -14,7 +14,7 @@ import (
 	"github.com/mainnika/mongox-go-driver/mongox/query"
 )
 
-func createSimpleLoad(db *mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
+func createSimpleLoad(db mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
 
 	collection := db.GetCollectionOf(target)
 	opts := options.Find()
@@ -26,7 +26,7 @@ func createSimpleLoad(db *mongox.Database, target interface{}, composed *query.Q
 	return collection.Find(db.Context(), composed.M(), opts)
 }
 
-func createAggregateLoad(db *mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
+func createAggregateLoad(db mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
 
 	collection := db.GetCollectionOf(target)
 	opts := options.Aggregate()

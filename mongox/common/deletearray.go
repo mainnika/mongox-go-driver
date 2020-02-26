@@ -12,7 +12,7 @@ import (
 )
 
 // DeleteArray removes documents list from a database by their ids
-func DeleteArray(db *mongox.Database, target interface{}) error {
+func DeleteArray(db mongox.Database, target interface{}) error {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()

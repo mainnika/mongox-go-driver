@@ -11,7 +11,7 @@ import (
 
 // Count function counts documents in the database by query
 // target is used only to get collection by tag so it'd be better to use nil ptr here
-func Count(db *mongox.Database, target interface{}, filters ...interface{}) (int64, error) {
+func Count(db mongox.Database, target interface{}, filters ...interface{}) (int64, error) {
 
 	collection := db.GetCollectionOf(target)
 	opts := options.Count()

@@ -12,7 +12,7 @@ import (
 )
 
 // LoadArray loads an array of documents from the database by query
-func LoadArray(db *mongox.Database, target interface{}, filters ...interface{}) error {
+func LoadArray(db mongox.Database, target interface{}, filters ...interface{}) error {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()

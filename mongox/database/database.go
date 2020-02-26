@@ -1,4 +1,4 @@
-package mongox
+package database
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
+	"github.com/mainnika/mongox-go-driver/mongox"
 	"github.com/mainnika/mongox-go-driver/mongox/errors"
 )
 
@@ -17,7 +18,7 @@ type Database struct {
 }
 
 // NewDatabase function creates new database instance with mongo client and empty context
-func NewDatabase(client *mongo.Client, dbname string) *Database {
+func NewDatabase(client *mongo.Client, dbname string) mongox.Database {
 
 	db := &Database{}
 	db.client = client
@@ -27,7 +28,7 @@ func NewDatabase(client *mongo.Client, dbname string) *Database {
 }
 
 // Client function returns a mongo client
-func (d *Database) Client() *mongo.Client {
+func (d *Database) Client() mongox.MongoClient {
 	return d.client
 }
 
@@ -42,7 +43,7 @@ func (d *Database) Name() string {
 }
 
 // New function creates new database context with same client
-func (d *Database) New(ctx context.Context) *Database {
+func (d *Database) New(ctx context.Context) mongox.Database {
 
 	if ctx != nil {
 		ctx = context.Background()
@@ -61,7 +62,7 @@ func (d *Database) New(ctx context.Context) *Database {
 //     base.ObjectID `bson:",inline" json:",inline" collection:"foobars"`
 // 	   ...
 // Will panic if there is no «collection» tag
-func (d *Database) GetCollectionOf(document interface{}) *mongo.Collection {
+func (d *Database) GetCollectionOf(document interface{}) mongox.MongoCollection {
 
 	el := reflect.TypeOf(document).Elem()
 	numField := el.NumField()

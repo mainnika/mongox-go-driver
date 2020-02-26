@@ -14,7 +14,7 @@ import (
 )
 
 // SaveOne saves a single source document to the database
-func SaveOne(db *mongox.Database, source interface{}) error {
+func SaveOne(db mongox.Database, source interface{}) error {
 
 	collection := db.GetCollectionOf(source)
 	opts := options.FindOneAndReplace()
