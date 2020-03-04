@@ -97,3 +97,8 @@ type ObjectBased interface {
 	GetID() primitive.D
 	SetID(id primitive.D)
 }
+
+type InterfaceBased interface {
+	GetID() interface{}
+	SetID(id interface{})
+}

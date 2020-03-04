@@ -18,6 +18,9 @@ func GetID(source interface{}) (id interface{}) {
 		return getStringIDOrPanic(doc)
 	case mongox.ObjectBased:
 		return getObjectOrPanic(doc)
+	case mongox.InterfaceBased:
+		return getInterfaceOrPanic(doc)
+
 	default:
 		panic(fmt.Errorf("source contains malformed document, %v", source))
 	}
@@ -47,6 +50,16 @@ func getStringIDOrPanic(source mongox.StringBased) (id string) {
 }
 
 func getObjectOrPanic(source mongox.ObjectBased) (id primitive.D) {
+
+	id = source.GetID()
+	if id != nil {
+		return id
+	}
+
+	panic(fmt.Errorf("source contains malformed document, %v", source))
+}
+
+func getInterfaceOrPanic(source mongox.InterfaceBased) (id interface{}) {
 
 	id = source.GetID()
 	if id != nil {
