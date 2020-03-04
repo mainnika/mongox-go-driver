@@ -12,18 +12,18 @@ import (
 func GetID(source interface{}) (id interface{}) {
 
 	switch doc := source.(type) {
-	case mongox.BaseObjectID:
+	case mongox.ObjectIDBased:
 		return getObjectIDOrGenerate(doc)
-	case mongox.BaseString:
+	case mongox.StringBased:
 		return getStringIDOrPanic(doc)
-	case mongox.BaseObject:
+	case mongox.ObjectBased:
 		return getObjectOrPanic(doc)
 	default:
 		panic(fmt.Errorf("source contains malformed document, %v", source))
 	}
 }
 
-func getObjectIDOrGenerate(source mongox.BaseObjectID) (id primitive.ObjectID) {
+func getObjectIDOrGenerate(source mongox.ObjectIDBased) (id primitive.ObjectID) {
 
 	id = source.GetID()
 	if id != primitive.NilObjectID {
@@ -36,7 +36,7 @@ func getObjectIDOrGenerate(source mongox.BaseObjectID) (id primitive.ObjectID) {
 	return
 }
 
-func getStringIDOrPanic(source mongox.BaseString) (id string) {
+func getStringIDOrPanic(source mongox.StringBased) (id string) {
 
 	id = source.GetID()
 	if id != "" {
@@ -46,7 +46,7 @@ func getStringIDOrPanic(source mongox.BaseString) (id string) {
 	panic(fmt.Errorf("source contains malformed document, %v", source))
 }
 
-func getObjectOrPanic(source mongox.BaseObject) (id primitive.D) {
+func getObjectOrPanic(source mongox.ObjectBased) (id primitive.D) {
 
 	id = source.GetID()
 	if id != nil {
