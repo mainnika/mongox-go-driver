@@ -4,8 +4,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/mainnika/mongox-go-driver/mongox/base"
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 )
 
 // Compose is a function to compose filters into a single query

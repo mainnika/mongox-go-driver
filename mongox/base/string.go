@@ -1,7 +1,7 @@
 package base
 
 import (
-	"github.com/mainnika/mongox-go-driver/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 )
 
 var _ mongox.BaseString = &String{}
