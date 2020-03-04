@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mainnika/mongox-go-driver/mongox/database"
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/database"
 )
 
 // TempDB is a temporary database connection that will be destroyed after close

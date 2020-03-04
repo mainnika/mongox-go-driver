@@ -9,9 +9,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mainnika/mongox-go-driver/mongox/query"
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 func createSimpleLoad(db mongox.Database, target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {

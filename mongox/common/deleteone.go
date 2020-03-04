@@ -7,10 +7,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mainnika/mongox-go-driver/mongox/base"
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mainnika/mongox-go-driver/mongox/query"
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // DeleteOne removes a document from a database and then returns it into target

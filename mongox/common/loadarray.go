@@ -5,10 +5,10 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/mainnika/mongox-go-driver/mongox"
-	"github.com/mainnika/mongox-go-driver/mongox/base"
-	"github.com/mainnika/mongox-go-driver/mongox/errors"
-	"github.com/mainnika/mongox-go-driver/mongox/query"
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // LoadArray loads an array of documents from the database by query

@@ -1,4 +1,4 @@
-module github.com/mainnika/mongox-go-driver
+module github.com/mainnika/mongox-go-driver/v2
 
 require (
 	github.com/google/go-cmp v0.3.0 // indirect
