@@ -1,4 +1,4 @@
-package common
+package database
 
 import (
 	"fmt"
@@ -8,15 +8,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // DeleteOne removes a document from a database and then returns it into target
-func DeleteOne(db mongox.Database, target interface{}, filters ...interface{}) error {
+func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
 
-	collection := db.GetCollectionOf(target)
+	collection := d.GetCollectionOf(target)
 	opts := &options.FindOneAndDeleteOptions{}
 	composed := query.Compose(filters...)
 	protected := base.GetProtection(target)
@@ -33,7 +32,7 @@ func DeleteOne(db mongox.Database, target interface{}, filters ...interface{}) e
 		protected.V = time.Now().Unix()
 	}
 
-	result := collection.FindOneAndDelete(db.Context(), composed.M(), opts)
+	result := collection.FindOneAndDelete(d.Context(), composed.M(), opts)
 	if result.Err() != nil {
 		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}

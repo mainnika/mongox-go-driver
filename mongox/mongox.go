@@ -16,6 +16,22 @@ type Database interface {
 	Name() string
 	New(ctx context.Context) Database
 	GetCollectionOf(document interface{}) MongoCollection
+	Count(target interface{}, filters ...interface{}) (int64, error)
+	DeleteArray(target interface{}) error
+	DeleteOne(target interface{}, filters ...interface{}) error
+	LoadArray(target interface{}, filters ...interface{}) error
+	LoadOne(target interface{}, filters ...interface{}) error
+	LoadStream(target interface{}, filters ...interface{}) (StreamLoader, error)
+	SaveOne(source interface{}) error
+}
+
+// StreamLoader is a interface to control database cursor
+type StreamLoader interface {
+	DecodeNext() error
+	Decode() error
+	Next() error
+	Close() error
+	Err() error
 }
 
 // MongoClient is the mongo client interface

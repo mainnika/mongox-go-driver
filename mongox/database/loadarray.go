@@ -1,4 +1,4 @@
-package common
+package database
 
 import (
 	"fmt"
@@ -6,13 +6,12 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // LoadArray loads an array of documents from the database by query
-func LoadArray(db mongox.Database, target interface{}, filters ...interface{}) error {
+func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -41,18 +40,18 @@ func LoadArray(db mongox.Database, target interface{}, filters ...interface{}) e
 	var err error
 
 	if hasPreloader {
-		result, err = createAggregateLoad(db, zeroElem.Interface(), composed)
+		result, err = d.createAggregateLoad(zeroElem.Interface(), composed)
 	} else {
-		result, err = createSimpleLoad(db, zeroElem.Interface(), composed)
+		result, err = d.createSimpleLoad(zeroElem.Interface(), composed)
 	}
 	if err != nil {
 		return fmt.Errorf("can't create find result: %w", err)
 	}
 
-	defer result.Close(db.Context())
+	defer result.Close(d.Context())
 	var i int
 
-	for i = 0; result.Next(db.Context()); {
+	for i = 0; result.Next(d.Context()); {
 		if targetSliceV.Len() == i {
 			elem := reflect.New(targetSliceElemT.Elem())
 			if err = result.Decode(elem.Interface()); err == nil {

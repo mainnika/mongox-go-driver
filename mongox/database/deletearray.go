@@ -1,4 +1,4 @@
-package common
+package database
 
 import (
 	"fmt"
@@ -7,12 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 )
 
 // DeleteArray removes documents list from a database by their ids
-func DeleteArray(db mongox.Database, target interface{}) error {
+func (d *Database) DeleteArray(target interface{}) error {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -35,7 +34,7 @@ func DeleteArray(db mongox.Database, target interface{}) error {
 
 	zeroElem := reflect.Zero(targetSliceElemT)
 	targetLen := targetSliceV.Len()
-	collection := db.GetCollectionOf(zeroElem.Interface())
+	collection := d.GetCollectionOf(zeroElem.Interface())
 	opts := options.Delete()
 	ids := primitive.A{}
 
@@ -48,7 +47,7 @@ func DeleteArray(db mongox.Database, target interface{}) error {
 		return fmt.Errorf("can't delete zero elements")
 	}
 
-	result, err := collection.DeleteMany(db.Context(), primitive.M{"_id": primitive.M{"$in": ids}}, opts)
+	result, err := collection.DeleteMany(d.Context(), primitive.M{"_id": primitive.M{"$in": ids}}, opts)
 	if err != nil {
 		return fmt.Errorf("can't create find and delete result: %w", err)
 	}

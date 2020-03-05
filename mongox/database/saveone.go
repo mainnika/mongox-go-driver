@@ -1,4 +1,4 @@
-package common
+package database
 
 import (
 	"time"
@@ -7,15 +7,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // SaveOne saves a single source document to the database
-func SaveOne(db mongox.Database, source interface{}) error {
+func (d *Database) SaveOne(source interface{}) error {
 
-	collection := db.GetCollectionOf(source)
+	collection := d.GetCollectionOf(source)
 	opts := options.FindOneAndReplace()
 	id := base.GetID(source)
 	protected := base.GetProtection(source)
@@ -30,7 +29,7 @@ func SaveOne(db mongox.Database, source interface{}) error {
 		protected.V = time.Now().Unix()
 	}
 
-	result := collection.FindOneAndReplace(db.Context(), composed.M(), source, opts)
+	result := collection.FindOneAndReplace(d.Context(), composed.M(), source, opts)
 	if result.Err() != nil {
 		return result.Err()
 	}
