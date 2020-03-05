@@ -45,7 +45,7 @@ func (d *Database) Name() string {
 // New function creates new database context with same client
 func (d *Database) New(ctx context.Context) mongox.Database {
 
-	if ctx != nil {
+	if ctx == nil {
 		ctx = context.Background()
 	}
 
