@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -10,7 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -62,7 +62,7 @@ func createAggregateLoad(db mongox.Database, target interface{}, composed *query
 		}
 		jsonTag, ok := tag.Lookup("json")
 		if jsonTag == "-" {
-			return nil, errors.Malformedf("preload private field is impossible")
+			return nil, fmt.Errorf("preload private field is impossible")
 		}
 
 		jsonData := strings.SplitN(jsonTag, ",", 2)

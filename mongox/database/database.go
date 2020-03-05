@@ -2,12 +2,12 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 )
 
 // Database handler
@@ -78,5 +78,5 @@ func (d *Database) GetCollectionOf(document interface{}) mongox.MongoCollection 
 		return d.client.Database(d.dbname).Collection(found)
 	}
 
-	panic(errors.InternalErrorf("document %v does not have a collection tag", document))
+	panic(fmt.Errorf("document %v does not have a collection tag", document))
 }

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -35,15 +35,15 @@ func DeleteOne(db mongox.Database, target interface{}, filters ...interface{}) e
 
 	result := collection.FindOneAndDelete(db.Context(), composed.M(), opts)
 	if result.Err() != nil {
-		return errors.InternalErrorf("can't create find one and delete result: %s", result.Err())
+		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}
 
 	err := result.Decode(target)
 	if err == mongo.ErrNoDocuments {
-		return errors.NotFoundErrorf("%s", err)
+		return err
 	}
 	if err != nil {
-		return errors.InternalErrorf("can't decode result: %s", err)
+		return fmt.Errorf("can't decode result: %w", err)
 	}
 
 	return nil

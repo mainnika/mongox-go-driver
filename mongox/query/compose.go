@@ -1,11 +1,12 @@
 package query
 
 import (
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 )
 
 // Compose is a function to compose filters into a single query
@@ -15,7 +16,7 @@ func Compose(filters ...interface{}) *Query {
 
 	for _, f := range filters {
 		if !Push(q, f) {
-			panic(errors.InternalErrorf("unknown filter %v", f))
+			panic(fmt.Errorf("unknown filter %v", f))
 		}
 	}
 

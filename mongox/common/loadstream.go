@@ -2,12 +2,12 @@ package common
 
 import (
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -23,15 +23,18 @@ func (l *StreamLoader) DecodeNext() error {
 
 	hasNext := l.Cursor.Next(l.ctx)
 
+	if l.Cursor.Err() != nil {
+		return l.Cursor.Err()
+	}
 	if !hasNext {
-		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
+		return mongo.ErrNoDocuments
 	}
 
 	base.Reset(l.target)
 
 	err := l.Decode(l.target)
 	if err != nil {
-		return errors.InternalErrorf("can't decode desult: %s", err)
+		return fmt.Errorf("can't decode desult: %w", err)
 	}
 
 	return nil
@@ -41,8 +44,12 @@ func (l *StreamLoader) DecodeNext() error {
 func (l *StreamLoader) Next() error {
 
 	hasNext := l.Cursor.Next(l.ctx)
+
+	if l.Cursor.Err() != nil {
+		return l.Cursor.Err()
+	}
 	if !hasNext {
-		return errors.NotFoundErrorf("%s", mongo.ErrNoDocuments)
+		return mongo.ErrNoDocuments
 	}
 
 	return nil
@@ -69,7 +76,7 @@ func LoadStream(db mongox.Database, target interface{}, filters ...interface{}) 
 		cursor, err = createSimpleLoad(db, target, composed)
 	}
 	if err != nil {
-		return nil, errors.InternalErrorf("can't create find result: %s", err)
+		return nil, fmt.Errorf("can't create find result: %w", err)
 	}
 
 	l := &StreamLoader{Cursor: cursor, ctx: db.Context(), target: target}

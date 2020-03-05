@@ -1,10 +1,11 @@
 package base
 
 import (
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 )
 
 // GetID returns source document id
@@ -18,7 +19,7 @@ func GetID(source interface{}) (id interface{}) {
 	case mongox.BaseObject:
 		return getObjectOrPanic(doc)
 	default:
-		panic(errors.Malformedf("source contains malformed document, %v", source))
+		panic(fmt.Errorf("source contains malformed document, %v", source))
 	}
 }
 
@@ -42,7 +43,7 @@ func getStringIDOrPanic(source mongox.BaseString) (id string) {
 		return id
 	}
 
-	panic(errors.Malformedf("victim contains malformed document, %v", source))
+	panic(fmt.Errorf("source contains malformed document, %v", source))
 }
 
 func getObjectOrPanic(source mongox.BaseObject) (id primitive.D) {
@@ -52,5 +53,5 @@ func getObjectOrPanic(source mongox.BaseObject) (id primitive.D) {
 		return id
 	}
 
-	panic(errors.Malformedf("victim contains malformed document, %v", source))
+	panic(fmt.Errorf("source contains malformed document, %v", source))
 }

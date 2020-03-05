@@ -9,7 +9,6 @@ import (
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -33,7 +32,7 @@ func SaveOne(db mongox.Database, source interface{}) error {
 
 	result := collection.FindOneAndReplace(db.Context(), composed.M(), source, opts)
 	if result.Err() != nil {
-		return errors.NotFoundErrorf("%s", result.Err())
+		return result.Err()
 	}
 
 	return result.Decode(source)

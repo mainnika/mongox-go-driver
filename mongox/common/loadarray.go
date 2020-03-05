@@ -1,13 +1,13 @@
 package common
 
 import (
+	"fmt"
 	"reflect"
 
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/errors"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -19,18 +19,18 @@ func LoadArray(db mongox.Database, target interface{}, filters ...interface{}) e
 
 	targetK := targetV.Kind()
 	if targetK != reflect.Ptr {
-		panic(errors.InternalErrorf("target is not a ptr"))
+		panic(fmt.Errorf("target is not a ptr"))
 	}
 
 	targetSliceV := targetV.Elem()
 	targetSliceT := targetT.Elem()
 	if targetSliceT.Kind() != reflect.Slice {
-		panic(errors.InternalErrorf("target should be a ptr to a slice"))
+		panic(fmt.Errorf("target should be a ptr to a slice"))
 	}
 
 	targetSliceElemT := targetSliceT.Elem()
 	if targetSliceElemT.Kind() != reflect.Ptr {
-		panic(errors.InternalErrorf("target slice should contain ptrs"))
+		panic(fmt.Errorf("target slice should contain ptrs"))
 	}
 
 	composed := query.Compose(filters...)
@@ -46,7 +46,7 @@ func LoadArray(db mongox.Database, target interface{}, filters ...interface{}) e
 		result, err = createSimpleLoad(db, zeroElem.Interface(), composed)
 	}
 	if err != nil {
-		return errors.InternalErrorf("can't create find result: %s", err)
+		return fmt.Errorf("can't create find result: %w", err)
 	}
 
 	defer result.Close(db.Context())
