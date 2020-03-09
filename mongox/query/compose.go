@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 )
 
 // Compose is a function to compose filters into a single query
@@ -87,10 +87,10 @@ func applyProtection(q *Query, f interface{}) bool {
 	var v *int64
 
 	switch f := f.(type) {
-	case base.Protection:
+	case protection.Key:
 		x = &f.X
 		v = &f.V
-	case *base.Protection:
+	case *protection.Key:
 		if f == nil {
 			return false
 		}

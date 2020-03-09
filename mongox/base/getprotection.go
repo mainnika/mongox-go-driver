@@ -2,10 +2,12 @@ package base
 
 import (
 	"reflect"
+
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 )
 
 // GetProtection function finds protection field in the source document otherwise returns nil
-func GetProtection(source interface{}) *Protection {
+func GetProtection(source interface{}) *protection.Key {
 
 	v := reflect.ValueOf(source)
 	if v.Kind() != reflect.Ptr || v.IsNil() {
@@ -19,11 +21,11 @@ func GetProtection(source interface{}) *Protection {
 		field := el.Field(i)
 
 		switch field.Interface().(type) {
-		case *Protection:
-			return field.Interface().(*Protection)
-		case Protection:
+		case *protection.Key:
+			return field.Interface().(*protection.Key)
+		case protection.Key:
 			ptr := field.Addr()
-			return ptr.Interface().(*Protection)
+			return ptr.Interface().(*protection.Key)
 		default:
 			continue
 		}
