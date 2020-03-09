@@ -48,7 +48,6 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 		return fmt.Errorf("can't create find result: %w", err)
 	}
 
-	defer result.Close(d.Context())
 	var i int
 
 	for i = 0; result.Next(d.Context()); {
@@ -73,5 +72,5 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 	targetSliceV = targetSliceV.Slice(0, i)
 	targetV.Elem().Set(targetSliceV)
 
-	return nil
+	return result.Close(d.Context())
 }
