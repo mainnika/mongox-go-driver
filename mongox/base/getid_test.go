@@ -19,7 +19,7 @@ func (d *DocWithCustomInterface) GetID() interface{} {
 	return d.ID
 }
 
-func (d *DocWithCustomInterface) SetID(id interface{}) {
+func (d *DocWithCustomInterface) SetID(interface{}) {
 	panic("not implemented")
 }
 

@@ -12,6 +12,5 @@ var _ Preloader = Preload{}
 
 // Preload returns a preload list
 func (l Preload) Preload() []string {
-
-	return Preload(l)
+	return l
 }
