@@ -38,6 +38,7 @@ func (l *StreamLoader) DecodeNext() error {
 	return nil
 }
 
+// Decode function decodes the current cursor document into the target
 func (l *StreamLoader) Decode() error {
 
 	base.Reset(l.target)

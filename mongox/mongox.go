@@ -50,6 +50,7 @@ type JSONBased interface {
 	SetID(id primitive.D)
 }
 
+// InterfaceBased is an interface for documents that have custom declated type for the _id field
 type InterfaceBased interface {
 	GetID() interface{}
 	SetID(id interface{})
