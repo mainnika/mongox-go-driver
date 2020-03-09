@@ -33,7 +33,7 @@ func NewDatabase(client *mongo.Client, dbname string) mongox.Database {
 }
 
 // Client function returns a mongo client
-func (d *Database) Client() mongox.MongoClient {
+func (d *Database) Client() *mongo.Client {
 	return d.client
 }
 
@@ -67,7 +67,7 @@ func (d *Database) New(ctx context.Context) mongox.Database {
 //     base.ObjectID `bson:",inline" json:",inline" collection:"foobars"`
 // 	   ...
 // Will panic if there is no «collection» tag
-func (d *Database) GetCollectionOf(document interface{}) mongox.MongoCollection {
+func (d *Database) GetCollectionOf(document interface{}) *mongo.Collection {
 
 	el := reflect.TypeOf(document).Elem()
 	numField := el.NumField()

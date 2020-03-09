@@ -2,14 +2,16 @@ package base
 
 import (
 	"reflect"
-
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 )
 
 // Reset function creates new zero object for the target pointer
 func Reset(target interface{}) {
 
-	resettable, canReset := target.(mongox.Resetter)
+	type resetter interface {
+		Reset()
+	}
+
+	resettable, canReset := target.(resetter)
 	if canReset {
 		resettable.Reset()
 		return
