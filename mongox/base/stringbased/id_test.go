@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox/tempdb"
+	"github.com/mainnika/mongox-go-driver/v2/mongox-testing/database"
 )
 
 func Test_GetID(t *testing.T) {
@@ -40,7 +40,7 @@ func Test_SaveLoad(t *testing.T) {
 		Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	db, err := tempdb.NewTempDB("mongodb://localhost")
+	db, err := database.NewEphemeral("mongodb://localhost")
 	if err != nil {
 		t.Fatal(err)
 	}
