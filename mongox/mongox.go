@@ -96,8 +96,8 @@ type Resetter interface {
 	Reset()
 }
 
-// ObjectIDBased is an interface for documents that have objectId type for the _id field
-type ObjectIDBased interface {
+// OIDBased is an interface for documents that have objectId type for the _id field
+type OIDBased interface {
 	GetID() primitive.ObjectID
 	SetID(id primitive.ObjectID)
 }
@@ -108,8 +108,8 @@ type StringBased interface {
 	SetID(id string)
 }
 
-// ObjectBased is an interface for documents that have object type for the _id field
-type ObjectBased interface {
+// JSONBased is an interface for documents that have object type for the _id field
+type JSONBased interface {
 	GetID() primitive.D
 	SetID(id primitive.D)
 }

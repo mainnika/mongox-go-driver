@@ -12,11 +12,11 @@ import (
 func GetID(source interface{}) (id interface{}) {
 
 	switch doc := source.(type) {
-	case mongox.ObjectIDBased:
+	case mongox.OIDBased:
 		return getObjectIDOrGenerate(doc)
 	case mongox.StringBased:
 		return getStringIDOrPanic(doc)
-	case mongox.ObjectBased:
+	case mongox.JSONBased:
 		return getObjectOrPanic(doc)
 	case mongox.InterfaceBased:
 		return getInterfaceOrPanic(doc)
@@ -26,7 +26,7 @@ func GetID(source interface{}) (id interface{}) {
 	}
 }
 
-func getObjectIDOrGenerate(source mongox.ObjectIDBased) (id primitive.ObjectID) {
+func getObjectIDOrGenerate(source mongox.OIDBased) (id primitive.ObjectID) {
 
 	id = source.GetID()
 	if id != primitive.NilObjectID {
@@ -49,7 +49,7 @@ func getStringIDOrPanic(source mongox.StringBased) (id string) {
 	panic(fmt.Errorf("source contains malformed document, %v", source))
 }
 
-func getObjectOrPanic(source mongox.ObjectBased) (id primitive.D) {
+func getObjectOrPanic(source mongox.JSONBased) (id primitive.D) {
 
 	id = source.GetID()
 	if id != nil {
