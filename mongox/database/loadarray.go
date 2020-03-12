@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
@@ -36,7 +35,7 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 	zeroElem := reflect.Zero(targetSliceElemT)
 	hasPreloader, _ := composed.Preloader()
 
-	var result *mongo.Cursor
+	var result *mongox.Cursor
 	var err error
 
 	if hasPreloader {

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
@@ -17,13 +16,13 @@ import (
 
 // Database handler
 type Database struct {
-	client *mongo.Client
+	client *mongox.Client
 	dbname string
 	ctx    context.Context
 }
 
 // NewDatabase function creates new database instance with mongo client and empty context
-func NewDatabase(client *mongo.Client, dbname string) mongox.Database {
+func NewDatabase(client *mongox.Client, dbname string) mongox.Database {
 
 	db := &Database{}
 	db.client = client
@@ -33,7 +32,7 @@ func NewDatabase(client *mongo.Client, dbname string) mongox.Database {
 }
 
 // Client function returns a mongo client
-func (d *Database) Client() *mongo.Client {
+func (d *Database) Client() *mongox.Client {
 	return d.client
 }
 
@@ -67,7 +66,7 @@ func (d *Database) New(ctx context.Context) mongox.Database {
 //     base.ObjectID `bson:",inline" json:",inline" collection:"foobars"`
 // 	   ...
 // Will panic if there is no «collection» tag
-func (d *Database) GetCollectionOf(document interface{}) *mongo.Collection {
+func (d *Database) GetCollectionOf(document interface{}) *mongox.Collection {
 
 	el := reflect.TypeOf(document).Elem()
 	numField := el.NumField()
@@ -86,7 +85,7 @@ func (d *Database) GetCollectionOf(document interface{}) *mongo.Collection {
 	panic(fmt.Errorf("document %v does not have a collection tag", document))
 }
 
-func (d *Database) createSimpleLoad(target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
+func (d *Database) createSimpleLoad(target interface{}, composed *query.Query) (cursor *mongox.Cursor, err error) {
 
 	collection := d.GetCollectionOf(target)
 	opts := options.Find()
@@ -98,7 +97,7 @@ func (d *Database) createSimpleLoad(target interface{}, composed *query.Query) (
 	return collection.Find(d.Context(), composed.M(), opts)
 }
 
-func (d *Database) createAggregateLoad(target interface{}, composed *query.Query) (cursor *mongo.Cursor, err error) {
+func (d *Database) createAggregateLoad(target interface{}, composed *query.Query) (cursor *mongox.Cursor, err error) {
 
 	collection := d.GetCollectionOf(target)
 	opts := options.Aggregate()

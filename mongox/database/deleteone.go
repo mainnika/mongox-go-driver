@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
@@ -38,7 +38,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
 	}
 
 	err := result.Decode(target)
-	if err == mongo.ErrNoDocuments {
+	if err == mongox.ErrNoDocuments {
 		return err
 	}
 	if err != nil {

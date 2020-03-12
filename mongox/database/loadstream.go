@@ -3,8 +3,6 @@ package database
 import (
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
@@ -12,7 +10,7 @@ import (
 // LoadStream function loads documents one by one into a target channel
 func (d *Database) LoadStream(target interface{}, filters ...interface{}) (mongox.StreamLoader, error) {
 
-	var cursor *mongo.Cursor
+	var cursor *mongox.Cursor
 	var err error
 
 	composed := query.Compose(filters...)
@@ -27,7 +25,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (mongo
 		return nil, fmt.Errorf("can't create find result: %w", err)
 	}
 
-	l := &StreamLoader{Cursor: cursor, ctx: d.Context(), target: target}
+	l := &StreamLoader{cur: cursor, ctx: d.Context(), target: target}
 
 	return l, nil
 }

@@ -3,9 +3,9 @@ package database
 import (
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -21,7 +21,7 @@ func (d *Database) Count(target interface{}, filters ...interface{}) (int64, err
 	opts.Skip = composed.Skipper()
 
 	result, err := collection.CountDocuments(d.Context(), composed.M(), opts)
-	if err == mongo.ErrNoDocuments {
+	if err == mongox.ErrNoDocuments {
 		return 0, err
 	}
 	if err != nil {

@@ -3,8 +3,7 @@ package database
 import (
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
@@ -15,7 +14,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) error {
 	composed := query.Compose(append(filters, query.Limit(1))...)
 	hasPreloader, _ := composed.Preloader()
 
-	var result *mongo.Cursor
+	var result *mongox.Cursor
 	var err error
 
 	if hasPreloader {
@@ -32,7 +31,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) error {
 		return err
 	}
 	if !hasNext {
-		return mongo.ErrNoDocuments
+		return mongox.ErrNoDocuments
 	}
 
 	base.Reset(target)

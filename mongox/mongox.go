@@ -7,13 +7,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Reexport basic mongo structs
+type (
+	Cursor     = mongo.Cursor
+	Client     = mongo.Client
+	Collection = mongo.Collection
+)
+
 // Database is the mongox database interface
 type Database interface {
-	Client() *mongo.Client
+	Client() *Client
 	Context() context.Context
 	Name() string
 	New(ctx context.Context) Database
-	GetCollectionOf(document interface{}) *mongo.Collection
+	GetCollectionOf(document interface{}) *Collection
 	Count(target interface{}, filters ...interface{}) (int64, error)
 	DeleteArray(target interface{}) error
 	DeleteOne(target interface{}, filters ...interface{}) error
@@ -25,6 +32,7 @@ type Database interface {
 
 // StreamLoader is a interface to control database cursor
 type StreamLoader interface {
+	Cursor() *Cursor
 	DecodeNext() error
 	Decode() error
 	Next() error

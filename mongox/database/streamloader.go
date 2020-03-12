@@ -4,14 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"go.mongodb.org/mongo-driver/mongo"
-
+	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 )
 
 // StreamLoader is a controller for a database cursor
 type StreamLoader struct {
-	*mongo.Cursor
+	cur    *mongox.Cursor
 	ctx    context.Context
 	target interface{}
 }
@@ -19,18 +18,18 @@ type StreamLoader struct {
 // DecodeNext loads next documents to a target or returns an error
 func (l *StreamLoader) DecodeNext() error {
 
-	hasNext := l.Cursor.Next(l.ctx)
+	hasNext := l.cur.Next(l.ctx)
 
-	if l.Cursor.Err() != nil {
-		return l.Cursor.Err()
+	if l.cur.Err() != nil {
+		return l.cur.Err()
 	}
 	if !hasNext {
-		return mongo.ErrNoDocuments
+		return mongox.ErrNoDocuments
 	}
 
 	base.Reset(l.target)
 
-	err := l.Cursor.Decode(l.target)
+	err := l.cur.Decode(l.target)
 	if err != nil {
 		return fmt.Errorf("can't decode desult: %w", err)
 	}
@@ -43,7 +42,7 @@ func (l *StreamLoader) Decode() error {
 
 	base.Reset(l.target)
 
-	err := l.Cursor.Decode(l.target)
+	err := l.cur.Decode(l.target)
 	if err != nil {
 		return fmt.Errorf("can't decode desult: %w", err)
 	}
@@ -54,20 +53,27 @@ func (l *StreamLoader) Decode() error {
 // Next loads next documents but doesn't perform decoding
 func (l *StreamLoader) Next() error {
 
-	hasNext := l.Cursor.Next(l.ctx)
+	hasNext := l.cur.Next(l.ctx)
 
-	if l.Cursor.Err() != nil {
-		return l.Cursor.Err()
+	if l.cur.Err() != nil {
+		return l.cur.Err()
 	}
 	if !hasNext {
-		return mongo.ErrNoDocuments
+		return mongox.ErrNoDocuments
 	}
 
 	return nil
 }
 
+func (l *StreamLoader) Cursor() *mongox.Cursor {
+	return l.cur
+}
+
 // Close cursor
 func (l *StreamLoader) Close() error {
+	return l.cur.Close(l.ctx)
+}
 
-	return l.Cursor.Close(l.ctx)
+func (l *StreamLoader) Err() error {
+	return l.cur.Err()
 }
