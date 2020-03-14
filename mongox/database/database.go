@@ -37,8 +37,14 @@ func (d *Database) Client() *mongox.Client {
 }
 
 // Context function returns a context
-func (d *Database) Context() context.Context {
-	return d.ctx
+func (d *Database) Context() (ctx context.Context) {
+
+	ctx = d.ctx
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	return
 }
 
 // Name function returns a database name
