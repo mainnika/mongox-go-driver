@@ -19,6 +19,9 @@ func GetProtection(source interface{}) *protection.Key {
 
 	for i := 0; i < numField; i++ {
 		field := el.Field(i)
+		if !field.CanInterface() {
+			continue
+		}
 
 		switch field.Interface().(type) {
 		case *protection.Key:
