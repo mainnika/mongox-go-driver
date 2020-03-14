@@ -28,6 +28,7 @@ type Database interface {
 	LoadOne(target interface{}, filters ...interface{}) error
 	LoadStream(target interface{}, filters ...interface{}) (StreamLoader, error)
 	SaveOne(source interface{}) error
+	IndexEnsure(cfg interface{}, document interface{}) error
 }
 
 // StreamLoader is a interface to control database cursor
