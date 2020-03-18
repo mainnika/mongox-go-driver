@@ -26,6 +26,10 @@ func Compose(filters ...interface{}) *Query {
 // Push applies single filter to a query
 func Push(q *Query, f interface{}) bool {
 
+	if f == nil {
+		return true
+	}
+
 	ok := false
 	ok = ok || applyBson(q, f)
 	ok = ok || applyLimit(q, f)
@@ -91,9 +95,6 @@ func applyProtection(q *Query, f interface{}) bool {
 		x = &f.X
 		v = &f.V
 	case *protection.Key:
-		if f == nil {
-			return false
-		}
 		x = &f.X
 		v = &f.V
 
