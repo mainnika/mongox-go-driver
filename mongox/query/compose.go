@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // Compose is a function to compose filters into a single query
@@ -26,7 +27,7 @@ func Compose(filters ...interface{}) *Query {
 // Push applies single filter to a query
 func Push(q *Query, f interface{}) bool {
 
-	if f == nil {
+	if utils.IsNil(f) {
 		return true
 	}
 

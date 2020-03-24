@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // GetID returns source document id
@@ -62,7 +63,7 @@ func getObjectOrPanic(source mongox.JSONBased) (id primitive.D) {
 func getInterfaceOrPanic(source mongox.InterfaceBased) (id interface{}) {
 
 	id = source.GetID()
-	if id != nil {
+	if !utils.IsNil(id) {
 		return id
 	}
 

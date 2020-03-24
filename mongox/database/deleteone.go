@@ -10,6 +10,7 @@ import (
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // DeleteOne removes a document from a database and then returns it into target
@@ -22,7 +23,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
 
 	opts.Sort = composed.Sorter()
 
-	if target != nil {
+	if !utils.IsNil(target) {
 		composed.And(primitive.M{"_id": base.GetID(target)})
 	}
 
