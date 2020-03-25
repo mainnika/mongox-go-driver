@@ -64,15 +64,15 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) error {
 			panic(fmt.Errorf("cannot evaluate index key"))
 		}
 
-		index := primitive.M{key: 1}
 		opts := &options.IndexOptions{
 			Background: &f,
 			Unique:     &f,
 			Name:       &name,
 		}
 
+		index := primitive.D{{Key: key, Value: 1}}
 		if indexValues[0] == "-" {
-			index[key] = -1
+			index = primitive.D{{Key: key, Value: -1}}
 		}
 
 		for _, prop := range indexValues[1:] {
@@ -114,9 +114,9 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) error {
 				}
 
 				if compoundValue[0] == '-' {
-					index[compoundValue[1:]] = -1
+					index = append(index, primitive.E{compoundValue[1:], -1})
 				} else {
-					index[compoundValue] = 1
+					index = append(index, primitive.E{compoundValue, 1})
 				}
 
 			default:
