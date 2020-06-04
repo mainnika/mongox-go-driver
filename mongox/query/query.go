@@ -2,8 +2,6 @@ package query
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
-
-	"reflect"
 )
 
 // Query is an enchanched bson.M map
@@ -82,11 +80,7 @@ func (q *Query) Preloader() (empty bool, preloader []string) {
 
 // Empty checks the query for any content
 func (q *Query) Empty() bool {
-
-	qv := reflect.ValueOf(q.m)
-	keys := qv.MapKeys()
-
-	return len(keys) == 0
+	return len(q.m) == 0
 }
 
 // M returns underlying query map
