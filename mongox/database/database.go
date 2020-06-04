@@ -111,7 +111,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 	pipeline := primitive.A{}
 
 	if !composed.Empty() {
-		pipeline = append(pipeline, primitive.M{"$match": primitive.M{"$expr": composed.M()}})
+		pipeline = append(pipeline, primitive.M{"$match": composed.M()})
 	}
 	if composed.Sorter() != nil {
 		pipeline = append(pipeline, primitive.M{"$sort": composed.Sorter()})
