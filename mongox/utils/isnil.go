@@ -8,7 +8,7 @@ import (
 func IsNil(i interface{}) bool {
 
 	type iface struct {
-		_   *interface{}
+		_   unsafe.Pointer
 		ptr unsafe.Pointer
 	}
 
