@@ -46,11 +46,11 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) (err error
 
 		tpl, err = template.New("").Parse(indexTag)
 		if err != nil {
-			panic(fmt.Errorf("invalid prop template, %v", indexTag))
+			panic(fmt.Errorf("invalid prop template %v, err:%w", indexTag, err))
 		}
 		err = tpl.Execute(tmpBuffer, cfg)
 		if err != nil {
-			panic(fmt.Errorf("failed to evaluate prop template, %v", indexTag))
+			panic(fmt.Errorf("failed to evaluate prop template %v, err:%w", indexTag, err))
 		}
 
 		indexString := tmpBuffer.String()
