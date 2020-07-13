@@ -140,7 +140,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 		if !ok {
 			continue
 		}
-		jsonTag, ok := tag.Lookup("json")
+		jsonTag, _ := tag.Lookup("json")
 		if jsonTag == "-" {
 			panic(fmt.Errorf("preload private field is impossible"))
 		}
