@@ -35,5 +35,15 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 
 	base.Reset(target)
 
-	return result.Decode(target)
+	err = result.Decode(target)
+	if err != nil {
+		return
+	}
+
+	err = onDecode(d.ctx, target, composed.OnDecode()...)
+	if err != nil {
+		return
+	}
+
+	return
 }

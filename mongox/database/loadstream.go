@@ -25,7 +25,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loade
 		return
 	}
 
-	loader = &StreamLoader{cur: cursor, ctx: d.Context(), target: target}
+	loader = &StreamLoader{cur: cursor, ctx: d.Context(), target: target, query: composed}
 
 	return
 }

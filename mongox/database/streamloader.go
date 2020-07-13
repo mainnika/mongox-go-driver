@@ -5,11 +5,13 @@ import (
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // StreamLoader is a controller for a database cursor
 type StreamLoader struct {
 	cur    *mongox.Cursor
+	query  *query.Query
 	ctx    context.Context
 	target interface{}
 }
@@ -36,6 +38,14 @@ func (l *StreamLoader) Decode() (err error) {
 	base.Reset(l.target)
 
 	err = l.cur.Decode(l.target)
+	if err != nil {
+		return
+	}
+
+	err = onDecode(l.ctx, l.target, l.query.OnDecode()...)
+	if err != nil {
+		return
+	}
 
 	return
 }
