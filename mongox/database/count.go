@@ -1,11 +1,8 @@
 package database
 
 import (
-	"fmt"
-
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
@@ -21,12 +18,6 @@ func (d *Database) Count(target interface{}, filters ...interface{}) (result int
 	opts.Skip = composed.Skipper()
 
 	result, err = collection.CountDocuments(d.Context(), composed.M(), opts)
-	if err == mongox.ErrNoDocuments {
-		return 0, err
-	}
-	if err != nil {
-		return 0, fmt.Errorf("can't decode desult: %w", err)
-	}
 
 	return
 }

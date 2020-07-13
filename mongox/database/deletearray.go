@@ -49,7 +49,7 @@ func (d *Database) DeleteArray(target interface{}) (err error) {
 
 	result, err := collection.DeleteMany(d.Context(), primitive.M{"_id": primitive.M{"$in": ids}}, opts)
 	if err != nil {
-		return fmt.Errorf("can't create find and delete result: %w", err)
+		return
 	}
 	if result.DeletedCount != int64(targetLen) {
 		err = fmt.Errorf("can't verify delete result: removed count mismatch %d != %d", result.DeletedCount, targetLen)

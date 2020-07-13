@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
@@ -39,12 +38,6 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 	}
 
 	err = result.Decode(target)
-	if err == mongox.ErrNoDocuments {
-		return err
-	}
-	if err != nil {
-		return fmt.Errorf("can't decode result: %w", err)
-	}
 
 	return
 }
