@@ -142,7 +142,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 		}
 		jsonTag, ok := tag.Lookup("json")
 		if jsonTag == "-" {
-			return nil, fmt.Errorf("preload private field is impossible")
+			panic(fmt.Errorf("preload private field is impossible"))
 		}
 
 		jsonData := strings.SplitN(jsonTag, ",", 2)
@@ -156,7 +156,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 			continue
 		}
 		if len(preloadData) == 1 {
-			panic("there is no foreign field")
+			panic(fmt.Errorf("there is no foreign field"))
 		}
 
 		localField := strings.TrimSpace(preloadData[0])
@@ -166,7 +166,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 
 		foreignField := strings.TrimSpace(preloadData[1])
 		if len(foreignField) == 0 {
-			panic("there is no foreign field")
+			panic(fmt.Errorf("there is no foreign field"))
 		}
 
 		preloadLimiter := 100
@@ -198,7 +198,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 				typ = typ.Elem()
 			}
 			if typ.Kind() != reflect.Ptr {
-				panic("preload field should have ptr type")
+				panic(fmt.Errorf("preload field should have ptr type"))
 			}
 
 			lookupCollection := d.GetCollectionOf(reflect.Zero(typ).Interface())

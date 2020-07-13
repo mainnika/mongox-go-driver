@@ -1,6 +1,7 @@
 package base
 
 import (
+	"fmt"
 	"reflect"
 )
 
@@ -19,7 +20,7 @@ func Reset(target interface{}) {
 
 	v := reflect.ValueOf(target)
 	if v.Kind() != reflect.Ptr {
-		panic("reset target should be a pointer")
+		panic(fmt.Errorf("reset target should be a pointer"))
 	}
 
 	t := v.Elem().Type()
