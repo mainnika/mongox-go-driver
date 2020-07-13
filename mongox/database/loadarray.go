@@ -51,17 +51,18 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	for i = 0; result.Next(d.Context()); {
 		if targetSliceV.Len() == i {
 			elem := reflect.New(targetSliceElemT.Elem())
-			if err = result.Decode(elem.Interface()); err == nil {
+			err = result.Decode(elem.Interface())
+			if err == nil {
 				targetSliceV = reflect.Append(targetSliceV, elem)
-			} else {
-				continue
 			}
 		} else {
 			elem := targetSliceV.Index(i).Interface()
 			base.Reset(elem)
-			if err = result.Decode(elem); err != nil {
-				continue
-			}
+			err = result.Decode(elem)
+		}
+		if err != nil {
+			_ = result.Close(d.Context())
+			return
 		}
 
 		i++
