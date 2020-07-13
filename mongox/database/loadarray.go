@@ -10,7 +10,7 @@ import (
 )
 
 // LoadArray loads an array of documents from the database by query
-func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
+func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err error) {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -36,7 +36,7 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 	hasPreloader, _ := composed.Preloader()
 
 	var result *mongox.Cursor
-	var err error
+	var i int
 
 	if hasPreloader {
 		result, err = d.createAggregateLoad(zeroElem.Interface(), composed)
@@ -44,10 +44,9 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) error {
 		result, err = d.createSimpleLoad(zeroElem.Interface(), composed)
 	}
 	if err != nil {
-		return fmt.Errorf("can't create find result: %w", err)
+		err = fmt.Errorf("can't create find result: %w", err)
+		return
 	}
-
-	var i int
 
 	for i = 0; result.Next(d.Context()); {
 		if targetSliceV.Len() == i {

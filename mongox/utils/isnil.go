@@ -5,7 +5,7 @@ import (
 )
 
 // IsNil function evaluates the interface value to nil
-func IsNil(i interface{}) bool {
+func IsNil(i interface{}) (isNil bool) {
 
 	type iface struct {
 		_   unsafe.Pointer
@@ -14,8 +14,10 @@ func IsNil(i interface{}) bool {
 
 	unpacked := (*iface)(unsafe.Pointer(&i))
 	if unpacked.ptr == nil {
-		return true
+		isNil = true
+		return
 	}
 
-	return *(*unsafe.Pointer)(unpacked.ptr) == nil
+	isNil = *(*unsafe.Pointer)(unpacked.ptr) == nil
+	return
 }

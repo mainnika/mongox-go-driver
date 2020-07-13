@@ -21,7 +21,7 @@ import (
 //   `index:"-,+foo,+-bar,unique,allowNull"` -- https://docs.mongodb.com/manual/core/index-partial
 //   `index:"-,unique,allowNull,expireAfter=86400"` -- https://docs.mongodb.com/manual/core/index-ttl
 //   `index:"-,unique,allowNull,expireAfter={{.Expire}}"` -- evaluate index as a golang template with `cfg` arguments
-func (d *Database) IndexEnsure(cfg interface{}, document interface{}) error {
+func (d *Database) IndexEnsure(cfg interface{}, document interface{}) (err error) {
 
 	el := reflect.ValueOf(document).Elem().Type()
 	numField := el.NumField()
@@ -41,8 +41,10 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) error {
 			return fmt.Errorf("bson tag is not defined for field:%v document:%v", field, document)
 		}
 
-		tmpBuffer := &bytes.Buffer{}
-		tpl, err := template.New("").Parse(indexTag)
+		var tmpBuffer = &bytes.Buffer{}
+		var tpl *template.Template
+
+		tpl, err = template.New("").Parse(indexTag)
 		if err != nil {
 			panic(fmt.Errorf("invalid prop template, %v", indexTag))
 		}
@@ -126,9 +128,9 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) error {
 
 		_, err = documents.Indexes().CreateOne(d.Context(), mongo.IndexModel{Keys: index, Options: opts})
 		if err != nil {
-			return err
+			return
 		}
 	}
 
-	return nil
+	return
 }

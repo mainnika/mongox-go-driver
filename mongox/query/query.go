@@ -14,7 +14,7 @@ type Query struct {
 }
 
 // And function pushes the elem query to the $and array of the query
-func (q *Query) And(elem bson.M) *Query {
+func (q *Query) And(elem bson.M) (query *Query) {
 
 	if q.m == nil {
 		q.m = bson.M{}
@@ -33,57 +33,54 @@ func (q *Query) And(elem bson.M) *Query {
 }
 
 // Limiter returns limiter value or nil
-func (q *Query) Limiter() *int64 {
+func (q *Query) Limiter() (limit *int64) {
 
 	if q.limiter == nil {
-		return nil
+		return
 	}
 
 	return q.limiter.Limit()
 }
 
 // Sorter is a sort rule for a query
-func (q *Query) Sorter() interface{} {
+func (q *Query) Sorter() (sort interface{}) {
 
 	if q.sorter == nil {
-		return nil
+		return
 	}
 
 	return q.sorter.Sort()
 }
 
 // Skipper is a skipper for a query
-func (q *Query) Skipper() *int64 {
+func (q *Query) Skipper() (skip *int64) {
 
 	if q.skipper == nil {
-		return nil
+		return
 	}
 
 	return q.skipper.Skip()
 }
 
 // Preloader is a preloader list for a query
-func (q *Query) Preloader() (empty bool, preloader []string) {
+func (q *Query) Preloader() (ok bool, preloads []string) {
 
 	if q.preloader == nil {
 		return false, nil
 	}
 
-	preloader = q.preloader.Preload()
+	preloads = q.preloader.Preload()
+	ok = len(preloads) > 0
 
-	if len(preloader) == 0 {
-		return false, nil
-	}
-
-	return true, preloader
+	return
 }
 
 // Empty checks the query for any content
-func (q *Query) Empty() bool {
+func (q *Query) Empty() (isEmpty bool) {
 	return len(q.m) == 0
 }
 
 // M returns underlying query map
-func (q *Query) M() bson.M {
+func (q *Query) M() (m bson.M) {
 	return q.m
 }

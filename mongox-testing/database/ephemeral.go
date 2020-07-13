@@ -30,6 +30,6 @@ func NewEphemeral(URI string) (db *EphemeralDatabase, err error) {
 }
 
 // Close the connection and drop database
-func (e *EphemeralDatabase) Close() error {
+func (e *EphemeralDatabase) Close() (err error) {
 	return e.Client().Database(e.Name()).Drop(e.Context())
 }

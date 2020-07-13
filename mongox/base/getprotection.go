@@ -7,11 +7,11 @@ import (
 )
 
 // GetProtection function finds protection field in the source document otherwise returns nil
-func GetProtection(source interface{}) *protection.Key {
+func GetProtection(source interface{}) (key *protection.Key) {
 
 	v := reflect.ValueOf(source)
 	if v.Kind() != reflect.Ptr || v.IsNil() {
-		return nil
+		return
 	}
 
 	el := v.Elem()
@@ -25,14 +25,16 @@ func GetProtection(source interface{}) *protection.Key {
 
 		switch field.Interface().(type) {
 		case *protection.Key:
-			return field.Interface().(*protection.Key)
+			key = field.Interface().(*protection.Key)
 		case protection.Key:
 			ptr := field.Addr()
-			return ptr.Interface().(*protection.Key)
+			key = ptr.Interface().(*protection.Key)
 		default:
 			continue
 		}
+
+		return
 	}
 
-	return nil
+	return
 }

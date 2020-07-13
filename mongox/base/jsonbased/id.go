@@ -14,7 +14,7 @@ type Primary struct {
 }
 
 // GetID returns an _id
-func (p *Primary) GetID() primitive.D {
+func (p *Primary) GetID() (id primitive.D) {
 	return p.ID
 }
 

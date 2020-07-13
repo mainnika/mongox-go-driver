@@ -12,7 +12,7 @@ import (
 )
 
 // SaveOne saves a single source document to the database
-func (d *Database) SaveOne(source interface{}) error {
+func (d *Database) SaveOne(source interface{}) (err error) {
 
 	collection := d.GetCollectionOf(source)
 	opts := options.FindOneAndReplace()

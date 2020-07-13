@@ -14,7 +14,7 @@ import (
 )
 
 // DeleteOne removes a document from a database and then returns it into target
-func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
+func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err error) {
 
 	collection := d.GetCollectionOf(target)
 	opts := &options.FindOneAndDeleteOptions{}
@@ -38,7 +38,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
 		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}
 
-	err := result.Decode(target)
+	err = result.Decode(target)
 	if err == mongox.ErrNoDocuments {
 		return err
 	}
@@ -46,5 +46,5 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) error {
 		return fmt.Errorf("can't decode result: %w", err)
 	}
 
-	return nil
+	return
 }

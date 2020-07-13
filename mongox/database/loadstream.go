@@ -8,10 +8,9 @@ import (
 )
 
 // LoadStream function loads documents one by one into a target channel
-func (d *Database) LoadStream(target interface{}, filters ...interface{}) (mongox.StreamLoader, error) {
+func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loader mongox.StreamLoader, err error) {
 
 	var cursor *mongox.Cursor
-	var err error
 
 	composed := query.Compose(filters...)
 	hasPreloader, _ := composed.Preloader()
@@ -22,10 +21,11 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (mongo
 		cursor, err = d.createSimpleLoad(target, composed)
 	}
 	if err != nil {
-		return nil, fmt.Errorf("can't create find result: %w", err)
+		err = fmt.Errorf("can't create find result: %w", err)
+		return
 	}
 
-	l := &StreamLoader{cur: cursor, ctx: d.Context(), target: target}
+	loader = &StreamLoader{cur: cursor, ctx: d.Context(), target: target}
 
-	return l, nil
+	return
 }

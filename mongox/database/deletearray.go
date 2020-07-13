@@ -11,7 +11,7 @@ import (
 )
 
 // DeleteArray removes documents list from a database by their ids
-func (d *Database) DeleteArray(target interface{}) error {
+func (d *Database) DeleteArray(target interface{}) (err error) {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -52,8 +52,8 @@ func (d *Database) DeleteArray(target interface{}) error {
 		return fmt.Errorf("can't create find and delete result: %w", err)
 	}
 	if result.DeletedCount != int64(targetLen) {
-		return fmt.Errorf("can't verify delete result: removed count mismatch %d != %d", result.DeletedCount, targetLen)
+		err = fmt.Errorf("can't verify delete result: removed count mismatch %d != %d", result.DeletedCount, targetLen)
 	}
 
-	return nil
+	return
 }

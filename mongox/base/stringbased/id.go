@@ -12,7 +12,7 @@ type Primary struct {
 }
 
 // GetID returns an _id
-func (p *Primary) GetID() string {
+func (p *Primary) GetID() (id string) {
 	return p.ID
 }
 

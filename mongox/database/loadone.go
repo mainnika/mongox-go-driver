@@ -9,13 +9,12 @@ import (
 )
 
 // LoadOne function loads a first single target document by a query
-func (d *Database) LoadOne(target interface{}, filters ...interface{}) error {
+func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err error) {
 
 	composed := query.Compose(append(filters, query.Limit(1))...)
 	hasPreloader, _ := composed.Preloader()
 
 	var result *mongox.Cursor
-	var err error
 
 	if hasPreloader {
 		result, err = d.createAggregateLoad(target, composed)

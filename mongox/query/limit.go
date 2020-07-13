@@ -2,7 +2,7 @@ package query
 
 // Limiter is a filter to limit the result
 type Limiter interface {
-	Limit() *int64
+	Limit() (limit *int64)
 }
 
 // Limit is a simple implementation of the Limiter filter
@@ -11,12 +11,14 @@ type Limit int64
 var _ Limiter = Limit(0)
 
 // Limit returns a limit
-func (l Limit) Limit() *int64 {
+func (l Limit) Limit() (limit *int64) {
 
-	lim := int64(l)
-	if lim <= 0 {
-		return nil
+	if l <= 0 {
+		return
 	}
 
-	return &lim
+	limit = new(int64)
+	*limit = int64(l)
+
+	return
 }

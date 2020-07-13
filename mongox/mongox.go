@@ -16,51 +16,51 @@ type (
 
 // Database is the mongox database interface
 type Database interface {
-	Client() *Client
-	Context() context.Context
-	Name() string
-	New(ctx context.Context) Database
-	GetCollectionOf(document interface{}) *Collection
-	Count(target interface{}, filters ...interface{}) (int64, error)
-	DeleteArray(target interface{}) error
-	DeleteOne(target interface{}, filters ...interface{}) error
-	LoadArray(target interface{}, filters ...interface{}) error
-	LoadOne(target interface{}, filters ...interface{}) error
-	LoadStream(target interface{}, filters ...interface{}) (StreamLoader, error)
-	SaveOne(source interface{}) error
-	IndexEnsure(cfg interface{}, document interface{}) error
+	Client() (client *Client)
+	Context() (context context.Context)
+	Name() (name string)
+	New(ctx context.Context) (db Database)
+	GetCollectionOf(document interface{}) (collection *Collection)
+	Count(target interface{}, filters ...interface{}) (count int64, err error)
+	DeleteArray(target interface{}) (err error)
+	DeleteOne(target interface{}, filters ...interface{}) (err error)
+	LoadArray(target interface{}, filters ...interface{}) (err error)
+	LoadOne(target interface{}, filters ...interface{}) (err error)
+	LoadStream(target interface{}, filters ...interface{}) (loader StreamLoader, err error)
+	SaveOne(source interface{}) (err error)
+	IndexEnsure(cfg interface{}, document interface{}) (err error)
 }
 
 // StreamLoader is a interface to control database cursor
 type StreamLoader interface {
-	Cursor() *Cursor
-	DecodeNext() error
-	Decode() error
-	Next() error
-	Close() error
-	Err() error
+	Cursor() (cursor *Cursor)
+	DecodeNext() (err error)
+	Decode() (err error)
+	Next() (err error)
+	Close() (err error)
+	Err() (err error)
 }
 
 // OIDBased is an interface for documents that have objectId type for the _id field
 type OIDBased interface {
-	GetID() primitive.ObjectID
+	GetID() (id primitive.ObjectID)
 	SetID(id primitive.ObjectID)
 }
 
 // StringBased is an interface for documents that have string type for the _id field
 type StringBased interface {
-	GetID() string
+	GetID() (id string)
 	SetID(id string)
 }
 
 // JSONBased is an interface for documents that have object type for the _id field
 type JSONBased interface {
-	GetID() primitive.D
+	GetID() (id primitive.D)
 	SetID(id primitive.D)
 }
 
 // InterfaceBased is an interface for documents that have custom declated type for the _id field
 type InterfaceBased interface {
-	GetID() interface{}
+	GetID() (id interface{})
 	SetID(id interface{})
 }

@@ -11,7 +11,7 @@ import (
 
 // Count function counts documents in the database by query
 // target is used only to get collection by tag so it'd be better to use nil ptr here
-func (d *Database) Count(target interface{}, filters ...interface{}) (int64, error) {
+func (d *Database) Count(target interface{}, filters ...interface{}) (result int64, err error) {
 
 	collection := d.GetCollectionOf(target)
 	opts := options.Count()
@@ -20,7 +20,7 @@ func (d *Database) Count(target interface{}, filters ...interface{}) (int64, err
 	opts.Limit = composed.Limiter()
 	opts.Skip = composed.Skipper()
 
-	result, err := collection.CountDocuments(d.Context(), composed.M(), opts)
+	result, err = collection.CountDocuments(d.Context(), composed.M(), opts)
 	if err == mongox.ErrNoDocuments {
 		return 0, err
 	}
@@ -28,5 +28,5 @@ func (d *Database) Count(target interface{}, filters ...interface{}) (int64, err
 		return 0, fmt.Errorf("can't decode desult: %w", err)
 	}
 
-	return result, nil
+	return
 }

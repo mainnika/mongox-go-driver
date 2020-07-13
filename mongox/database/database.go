@@ -22,17 +22,18 @@ type Database struct {
 }
 
 // NewDatabase function creates new database instance with mongo client and empty context
-func NewDatabase(client *mongox.Client, dbname string) mongox.Database {
+func NewDatabase(client *mongox.Client, dbname string) (db mongox.Database) {
 
-	db := &Database{}
-	db.client = client
-	db.dbname = dbname
+	db = &Database{
+		client: client,
+		dbname: dbname,
+	}
 
-	return db
+	return
 }
 
 // Client function returns a mongo client
-func (d *Database) Client() *mongox.Client {
+func (d *Database) Client() (client *mongox.Client) {
 	return d.client
 }
 
@@ -48,22 +49,24 @@ func (d *Database) Context() (ctx context.Context) {
 }
 
 // Name function returns a database name
-func (d *Database) Name() string {
+func (d *Database) Name() (name string) {
 	return d.dbname
 }
 
 // New function creates new database context with same client
-func (d *Database) New(ctx context.Context) mongox.Database {
+func (d *Database) New(ctx context.Context) (db mongox.Database) {
 
 	if ctx == nil {
 		ctx = context.Background()
 	}
 
-	return &Database{
+	db = &Database{
 		client: d.client,
 		dbname: d.dbname,
 		ctx:    ctx,
 	}
+
+	return
 }
 
 // GetCollectionOf returns the collection object by the «collection» tag of the given document;
@@ -72,7 +75,7 @@ func (d *Database) New(ctx context.Context) mongox.Database {
 //     base.ObjectID `bson:",inline" json:",inline" collection:"foobars"`
 // 	   ...
 // Will panic if there is no «collection» tag
-func (d *Database) GetCollectionOf(document interface{}) *mongox.Collection {
+func (d *Database) GetCollectionOf(document interface{}) (collection *mongox.Collection) {
 
 	el := reflect.TypeOf(document).Elem()
 	numField := el.NumField()
