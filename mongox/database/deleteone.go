@@ -19,6 +19,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 	opts := &options.FindOneAndDeleteOptions{}
 	composed := query.Compose(filters...)
 	protected := base.GetProtection(target)
+	ctx := query.WithContext(d.Context(), composed)
 
 	opts.Sort = composed.Sorter()
 
@@ -32,7 +33,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 		protected.V = time.Now().Unix()
 	}
 
-	result := collection.FindOneAndDelete(d.Context(), composed.M(), opts)
+	result := collection.FindOneAndDelete(ctx, composed.M(), opts)
 	if result.Err() != nil {
 		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}
