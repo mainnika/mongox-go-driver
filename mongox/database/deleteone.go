@@ -33,12 +33,22 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 		protected.V = time.Now().Unix()
 	}
 
+	defer composed.OnClose().Invoke(ctx, target)
+
 	result := collection.FindOneAndDelete(ctx, composed.M(), opts)
 	if result.Err() != nil {
 		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}
 
 	err = result.Decode(target)
+	if err != nil {
+		return
+	}
+
+	err = composed.OnDecode().Invoke(ctx, target)
+	if err != nil {
+		return
+	}
 
 	return
 }
