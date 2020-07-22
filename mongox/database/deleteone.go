@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // DeleteOne removes a document from a database and then returns it into target
@@ -22,7 +22,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 
 	opts.Sort = composed.Sorter()
 
-	if !utils.IsNil(target) {
+	if !reflect2.IsNil(target) {
 		composed.And(primitive.M{"_id": base.GetID(target)})
 	}
 

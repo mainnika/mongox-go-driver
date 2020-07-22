@@ -3,11 +3,11 @@ package query
 import (
 	"fmt"
 
+	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // Compose is a function to compose filters into a single query
@@ -27,7 +27,7 @@ func Compose(filters ...interface{}) (query *Query) {
 // Push applies single filter to a query
 func Push(q *Query, f interface{}) (ok bool) {
 
-	if utils.IsNil(f) {
+	if reflect2.IsNil(f) {
 		return true
 	}
 

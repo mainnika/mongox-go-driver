@@ -3,10 +3,10 @@ package base
 import (
 	"fmt"
 
+	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/utils"
 )
 
 // GetID returns source document id
@@ -63,7 +63,7 @@ func getObjectOrPanic(source mongox.JSONBased) (id primitive.D) {
 func getInterfaceOrPanic(source mongox.InterfaceBased) (id interface{}) {
 
 	id = source.GetID()
-	if !utils.IsNil(id) {
+	if !reflect2.IsNil(id) {
 		return id
 	}
 
