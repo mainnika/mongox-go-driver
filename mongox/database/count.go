@@ -13,11 +13,14 @@ func (d *Database) Count(target interface{}, filters ...interface{}) (result int
 	collection := d.GetCollectionOf(target)
 	opts := options.Count()
 	composed := query.Compose(filters...)
+	ctx := query.WithContext(d.Context(), composed)
 
 	opts.Limit = composed.Limiter()
 	opts.Skip = composed.Skipper()
 
-	result, err = collection.CountDocuments(d.Context(), composed.M(), opts)
+	result, err = collection.CountDocuments(ctx, composed.M(), opts)
+
+	_ = composed.OnClose().Invoke(ctx, target)
 
 	return
 }
