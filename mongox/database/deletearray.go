@@ -52,6 +52,8 @@ func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err 
 
 	composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
 
+	defer composed.OnClose().Invoke(ctx, target)
+
 	result, err := collection.DeleteMany(ctx, composed.M(), opts)
 	if err != nil {
 		return
