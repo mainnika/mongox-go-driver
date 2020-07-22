@@ -12,6 +12,7 @@ type Query struct {
 	skipper   Skipper
 	preloader Preloader
 	ondecode  Callbacks
+	onclose   Callbacks
 }
 
 // And function pushes the elem query to the $and array of the query
@@ -79,6 +80,10 @@ func (q *Query) Preloader() (ok bool, preloads []string) {
 // OnDecode callback is called after the mongo decode function
 func (q *Query) OnDecode() (callbacks Callbacks) {
 	return q.ondecode
+}
+
+func (q *Query) OnClose() (callbacks Callbacks) {
+	return q.onclose
 }
 
 // Empty checks the query for any content

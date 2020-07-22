@@ -7,7 +7,10 @@ import (
 type Callback func(ctx context.Context, iter interface{}) (err error)
 type Callbacks []Callback
 
-type OnDecode Callback
+type (
+	OnDecode Callback
+	OnClose  Callback
+)
 
 // Invoke callbacks sequence
 func (c Callbacks) Invoke(ctx context.Context, iter interface{}) (err error) {

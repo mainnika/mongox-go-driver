@@ -130,8 +130,13 @@ func applyCallbacks(q *Query, f interface{}) (ok bool) {
 	switch cb := f.(type) {
 	case OnDecode:
 		q.ondecode = append(q.ondecode, Callback(cb))
-		ok = true
+	case OnClose:
+		q.onclose = append(q.onclose, Callback(cb))
+	default:
+		return
 	}
+
+	ok = true
 
 	return
 }

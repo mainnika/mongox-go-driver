@@ -25,6 +25,8 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return fmt.Errorf("can't create find result: %w", err)
 	}
 
+	defer composed.OnClose().Invoke(d.Context(), target)
+
 	hasNext := result.Next(d.Context())
 	if result.Err() != nil {
 		return err

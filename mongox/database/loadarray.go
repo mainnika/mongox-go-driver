@@ -48,6 +48,8 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		return
 	}
 
+	defer composed.OnClose().Invoke(d.Context(), target)
+
 	for i = 0; result.Next(d.Context()); {
 
 		var elem interface{}
