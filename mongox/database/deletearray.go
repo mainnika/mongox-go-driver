@@ -8,10 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // DeleteArray removes documents list from a database by their ids
-func (d *Database) DeleteArray(target interface{}) (err error) {
+func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err error) {
 
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
@@ -37,6 +38,7 @@ func (d *Database) DeleteArray(target interface{}) (err error) {
 	collection := d.GetCollectionOf(zeroElem.Interface())
 	opts := options.Delete()
 	ids := primitive.A{}
+	composed := query.Compose(filters...)
 
 	for i := 0; i < targetLen; i++ {
 		elem := targetSliceV.Index(i)
@@ -47,7 +49,9 @@ func (d *Database) DeleteArray(target interface{}) (err error) {
 		return fmt.Errorf("can't delete zero elements")
 	}
 
-	result, err := collection.DeleteMany(d.Context(), primitive.M{"_id": primitive.M{"$in": ids}}, opts)
+	composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
+
+	result, err := collection.DeleteMany(d.Context(), composed.M(), opts)
 	if err != nil {
 		return
 	}

@@ -22,7 +22,7 @@ type Database interface {
 	New(ctx context.Context) (db Database)
 	GetCollectionOf(document interface{}) (collection *Collection)
 	Count(target interface{}, filters ...interface{}) (count int64, err error)
-	DeleteArray(target interface{}) (err error)
+	DeleteArray(target interface{}, filters ...interface{}) (err error)
 	DeleteOne(target interface{}, filters ...interface{}) (err error)
 	LoadArray(target interface{}, filters ...interface{}) (err error)
 	LoadOne(target interface{}, filters ...interface{}) (err error)
