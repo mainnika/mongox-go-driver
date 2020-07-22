@@ -32,10 +32,22 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 		protected.V = time.Now().Unix()
 	}
 
+	defer composed.OnClose().Invoke(ctx, source)
+
 	result := collection.FindOneAndReplace(ctx, composed.M(), source, opts)
 	if result.Err() != nil {
 		return result.Err()
 	}
 
-	return result.Decode(source)
+	err = result.Decode(source)
+	if err != nil {
+		return
+	}
+
+	err = composed.OnDecode().Invoke(ctx, source)
+	if err != nil {
+		return
+	}
+
+	return
 }
