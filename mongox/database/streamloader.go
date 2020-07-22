@@ -42,7 +42,7 @@ func (l *StreamLoader) Decode() (err error) {
 		return
 	}
 
-	err = onDecode(l.ctx, l.target, l.query.OnDecode()...)
+	err = l.query.OnDecode().Invoke(l.ctx, l.target)
 	if err != nil {
 		return
 	}

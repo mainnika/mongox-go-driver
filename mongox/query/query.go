@@ -11,7 +11,7 @@ type Query struct {
 	sorter    Sorter
 	skipper   Skipper
 	preloader Preloader
-	ondecode  []OnDecode
+	ondecode  Callbacks
 }
 
 // And function pushes the elem query to the $and array of the query
@@ -77,7 +77,7 @@ func (q *Query) Preloader() (ok bool, preloads []string) {
 }
 
 // OnDecode callback is called after the mongo decode function
-func (q *Query) OnDecode() (callbacks []OnDecode) {
+func (q *Query) OnDecode() (callbacks Callbacks) {
 	return q.ondecode
 }
 

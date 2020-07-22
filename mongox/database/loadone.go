@@ -40,7 +40,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return
 	}
 
-	err = onDecode(d.ctx, target, composed.OnDecode()...)
+	err = composed.OnDecode().Invoke(d.Context(), target)
 	if err != nil {
 		return
 	}

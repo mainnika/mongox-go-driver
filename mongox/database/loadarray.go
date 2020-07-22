@@ -69,7 +69,7 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 			return
 		}
 
-		err = onDecode(d.ctx, elem, composed.OnDecode()...)
+		err = composed.OnDecode().Invoke(d.Context(), elem)
 		if err != nil {
 			_ = result.Close(d.Context())
 			return
