@@ -19,6 +19,7 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 	id := base.GetID(source)
 	protected := base.GetProtection(source)
 	composed := query.Compose(filters...)
+	ctx := query.WithContext(d.Context(), composed)
 
 	composed.And(bson.M{"_id": id})
 
@@ -31,7 +32,7 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 		protected.V = time.Now().Unix()
 	}
 
-	result := collection.FindOneAndReplace(d.Context(), composed.M(), source, opts)
+	result := collection.FindOneAndReplace(ctx, composed.M(), source, opts)
 	if result.Err() != nil {
 		return result.Err()
 	}
