@@ -27,7 +27,7 @@ type Database interface {
 	LoadArray(target interface{}, filters ...interface{}) (err error)
 	LoadOne(target interface{}, filters ...interface{}) (err error)
 	LoadStream(target interface{}, filters ...interface{}) (loader StreamLoader, err error)
-	SaveOne(source interface{}) (err error)
+	SaveOne(source interface{}, filters ...interface{}) (err error)
 	IndexEnsure(cfg interface{}, document interface{}) (err error)
 }
 
