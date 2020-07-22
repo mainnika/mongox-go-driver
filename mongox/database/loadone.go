@@ -13,6 +13,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 
 	composed := query.Compose(append(filters, query.Limit(1))...)
 	hasPreloader, _ := composed.Preloader()
+	ctx := query.WithContext(d.Context(), composed)
 
 	var result *mongox.Cursor
 
@@ -25,9 +26,9 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return fmt.Errorf("can't create find result: %w", err)
 	}
 
-	defer composed.OnClose().Invoke(d.Context(), target)
+	defer composed.OnClose().Invoke(ctx, target)
 
-	hasNext := result.Next(d.Context())
+	hasNext := result.Next(ctx)
 	if result.Err() != nil {
 		return err
 	}
@@ -42,7 +43,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return
 	}
 
-	err = composed.OnDecode().Invoke(d.Context(), target)
+	err = composed.OnDecode().Invoke(ctx, target)
 	if err != nil {
 		return
 	}

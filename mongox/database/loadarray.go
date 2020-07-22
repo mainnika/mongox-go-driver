@@ -34,6 +34,7 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	composed := query.Compose(filters...)
 	zeroElem := reflect.Zero(targetSliceElemT)
 	hasPreloader, _ := composed.Preloader()
+	ctx := query.WithContext(d.Context(), composed)
 
 	var result *mongox.Cursor
 	var i int
@@ -48,9 +49,9 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		return
 	}
 
-	defer composed.OnClose().Invoke(d.Context(), target)
+	defer composed.OnClose().Invoke(ctx, target)
 
-	for i = 0; result.Next(d.Context()); {
+	for i = 0; result.Next(ctx); {
 
 		var elem interface{}
 
@@ -67,13 +68,13 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 			err = result.Decode(elem)
 		}
 		if err != nil {
-			_ = result.Close(d.Context())
+			_ = result.Close(ctx)
 			return
 		}
 
-		err = composed.OnDecode().Invoke(d.Context(), elem)
+		err = composed.OnDecode().Invoke(ctx, elem)
 		if err != nil {
-			_ = result.Close(d.Context())
+			_ = result.Close(ctx)
 			return
 		}
 
@@ -83,5 +84,5 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	targetSliceV = targetSliceV.Slice(0, i)
 	targetV.Elem().Set(targetSliceV)
 
-	return result.Close(d.Context())
+	return result.Close(ctx)
 }

@@ -14,6 +14,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loade
 
 	composed := query.Compose(filters...)
 	hasPreloader, _ := composed.Preloader()
+	ctx := query.WithContext(d.Context(), composed)
 
 	if hasPreloader {
 		cursor, err = d.createAggregateLoad(target, composed)
@@ -25,7 +26,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loade
 		return
 	}
 
-	loader = &StreamLoader{cur: cursor, ctx: d.Context(), target: target, query: composed}
+	loader = &StreamLoader{cur: cursor, ctx: ctx, target: target, query: composed}
 
 	return
 }
