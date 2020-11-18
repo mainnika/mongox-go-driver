@@ -16,9 +16,9 @@ func Compose(filters ...interface{}) (query *Query) {
 
 	query = &Query{}
 
-	for _, f := range filters {
-		if !Push(query, f) {
-			panic(fmt.Errorf("unknown filter %v", f))
+	for _, filter := range filters {
+		if !Push(query, filter) {
+			panic(fmt.Errorf("unknown filter %v", filter))
 		}
 	}
 
@@ -26,10 +26,12 @@ func Compose(filters ...interface{}) (query *Query) {
 }
 
 // Push applies single filter to a query
-func Push(q *Query, f interface{}) (ok bool) {
+func Push(query *Query, filter interface{}) (ok bool) {
 
-	if reflect2.IsNil(f) {
-		return true
+	ok = reflect2.IsNil(filter)
+	if ok {
+		return
+	}
 	}
 
 	for _, applier := range []applyFilterFunc{
@@ -42,17 +44,17 @@ func Push(q *Query, f interface{}) (ok bool) {
 		applyUpdater,
 		applyCallbacks,
 	} {
-		ok = applier(q, f) || ok
+		ok = applier(query, filter) || ok
 	}
 
 	return
 }
 
 // applyBson is a fallback for a custom primitive.M
-func applyBson(q *Query, f interface{}) (ok bool) {
+func applyBson(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(primitive.M); ok {
-		q.And(f)
+	if filter, ok := filter.(primitive.M); ok {
+		query.And(filter)
 		return true
 	}
 
@@ -60,10 +62,10 @@ func applyBson(q *Query, f interface{}) (ok bool) {
 }
 
 // applyLimits extends query with a limiter
-func applyLimit(q *Query, f interface{}) (ok bool) {
+func applyLimit(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(Limiter); ok {
-		q.limiter = f
+	if filter, ok := filter.(Limiter); ok {
+		query.limiter = filter
 		return true
 	}
 
@@ -71,10 +73,10 @@ func applyLimit(q *Query, f interface{}) (ok bool) {
 }
 
 // applySort extends query with a sort rule
-func applySort(q *Query, f interface{}) (ok bool) {
+func applySort(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(Sorter); ok {
-		q.sorter = f
+	if filter, ok := filter.(Sorter); ok {
+		query.sorter = filter
 		return true
 	}
 
@@ -82,76 +84,74 @@ func applySort(q *Query, f interface{}) (ok bool) {
 }
 
 // applySkip extends query with a skip number
-func applySkip(q *Query, f interface{}) (ok bool) {
+func applySkip(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(Skipper); ok {
-		q.skipper = f
+	if filter, ok := filter.(Skipper); ok {
+		query.skipper = filter
 		return true
 	}
 
 	return false
 }
 
-func applyProtection(q *Query, f interface{}) (ok bool) {
+func applyProtection(query *Query, filter interface{}) (ok bool) {
 
 	var x *primitive.ObjectID
 	var v *int64
 
-	switch f := f.(type) {
+	switch filter := filter.(type) {
 	case protection.Key:
-		x = &f.X
-		v = &f.V
+		x = &filter.X
+		v = &filter.V
 	case *protection.Key:
-		x = &f.X
-		v = &f.V
+		x = &filter.X
+		v = &filter.V
 
 	default:
 		return false
 	}
 
 	if x.IsZero() {
-		q.And(primitive.M{"_x": primitive.M{"$exists": false}})
-		q.And(primitive.M{"_v": primitive.M{"$exists": false}})
+		query.And(primitive.M{"_x": primitive.M{"$exists": false}})
+		query.And(primitive.M{"_v": primitive.M{"$exists": false}})
 	} else {
-		q.And(primitive.M{"_x": *x})
-		q.And(primitive.M{"_v": *v})
+		query.And(primitive.M{"_x": *x})
+		query.And(primitive.M{"_v": *v})
 	}
 
 	return true
 }
 
-func applyPreloader(q *Query, f interface{}) (ok bool) {
+func applyPreloader(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(Preloader); ok {
-		q.preloader = f
+	if filter, ok := filter.(Preloader); ok {
+		query.preloader = filter
 		return true
 	}
 
 	return false
 }
 
-func applyUpdater(q *Query, f interface{}) (ok bool) {
+func applyUpdater(query *Query, filter interface{}) (ok bool) {
 
-	if f, ok := f.(Updater); ok {
-		q.updater = f
+	if filter, ok := filter.(Updater); ok {
+		query.updater = filter
 		return true
 	}
 
 	return false
 }
 
-func applyCallbacks(q *Query, f interface{}) (ok bool) {
+func applyCallbacks(query *Query, filter interface{}) (ok bool) {
 
-	switch cb := f.(type) {
+	switch callback := filter.(type) {
 	case OnDecode:
-		q.ondecode = append(q.ondecode, Callback(cb))
+		query.ondecode = append(query.ondecode, Callback(callback))
 	case OnClose:
-		q.onclose = append(q.onclose, Callback(cb))
+		query.onclose = append(query.onclose, Callback(callback))
 	default:
-		return
+		return false
 	}
 
-	ok = true
-
-	return
+	return true
 }
