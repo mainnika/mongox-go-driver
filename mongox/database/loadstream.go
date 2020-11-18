@@ -15,7 +15,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loade
 		return
 	}
 
-	hasPreloader, _ := composed.Preloader()
+	_, hasPreloader := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 
 	var cursor *mongox.Cursor

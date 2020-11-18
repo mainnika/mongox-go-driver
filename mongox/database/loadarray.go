@@ -37,7 +37,7 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	}
 
 	zeroElem := reflect.Zero(targetSliceElemT)
-	hasPreloader, _ := composed.Preloader()
+	_, hasPreloader := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 
 	var result *mongox.Cursor

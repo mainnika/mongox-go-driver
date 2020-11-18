@@ -129,7 +129,7 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 	el := reflect.ValueOf(target).Elem()
 	elType := el.Type()
 	numField := elType.NumField()
-	_, preloads := composed.Preloader()
+	preloads, _ := composed.Preloader()
 
 	for i := 0; i < numField; i++ {
 

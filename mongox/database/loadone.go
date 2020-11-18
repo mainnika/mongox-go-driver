@@ -16,7 +16,7 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return
 	}
 
-	hasPreloader, _ := composed.Preloader()
+	_, hasPreloader := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 
 	var result *mongox.Cursor

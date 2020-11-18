@@ -76,10 +76,10 @@ func (q *Query) Updater() (update primitive.A) {
 }
 
 // Preloader is a preloader list for a query
-func (q *Query) Preloader() (ok bool, preloads []string) {
+func (q *Query) Preloader() (preloads []string, ok bool) {
 
 	if q.preloader == nil {
-		return false, nil
+		return nil, false
 	}
 
 	preloads = q.preloader.Preload()
