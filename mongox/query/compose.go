@@ -9,6 +9,8 @@ import (
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 )
 
+type applyFilterFunc = func(query *Query, filter interface{}) (ok bool)
+
 // Compose is a function to compose filters into a single query
 func Compose(filters ...interface{}) (query *Query) {
 
@@ -30,17 +32,20 @@ func Push(q *Query, f interface{}) (ok bool) {
 		return true
 	}
 
-	ok = false
-	ok = ok || applyBson(q, f)
-	ok = ok || applyLimit(q, f)
-	ok = ok || applySort(q, f)
-	ok = ok || applySkip(q, f)
-	ok = ok || applyProtection(q, f)
-	ok = ok || applyPreloader(q, f)
-	ok = ok || applyUpdater(q, f)
-	ok = ok || applyCallbacks(q, f)
+	for _, applier := range []applyFilterFunc{
+		applyBson,
+		applyLimit,
+		applySort,
+		applySkip,
+		applyProtection,
+		applyPreloader,
+		applyUpdater,
+		applyCallbacks,
+	} {
+		ok = applier(q, f) || ok
+	}
 
-	return ok
+	return
 }
 
 // applyBson is a fallback for a custom primitive.M
