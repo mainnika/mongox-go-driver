@@ -1,6 +1,9 @@
 package query
 
 import (
+	"github.com/modern-go/reflect2"
+	"github.com/valyala/bytebufferpool"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -66,13 +69,35 @@ func (q *Query) Skipper() (skip *int64) {
 }
 
 // Updater is an update command for a query
-func (q *Query) Updater() (update primitive.A) {
+func (q *Query) Updater() (update primitive.M, err error) {
 
 	if q.updater == nil {
+		update = primitive.M{}
 		return
 	}
 
-	return q.updater.Update()
+	update = q.updater.Update()
+
+	if reflect2.IsNil(update) {
+		update = primitive.M{}
+		return
+	}
+
+	buffer := bytebufferpool.Get()
+	defer bytebufferpool.Put(buffer)
+
+	// convert update document to bson map values
+	bsonBytes, err := bson.MarshalAppend(buffer.B, update)
+	if err != nil {
+		return
+	}
+	update = primitive.M{}
+	err = bson.Unmarshal(bsonBytes, update)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 // Preloader is a preloader list for a query
