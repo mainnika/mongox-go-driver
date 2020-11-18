@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -32,13 +33,15 @@ func (d *Database) UpdateOne(target interface{}, filters ...interface{}) (err er
 		if !protected.X.IsZero() {
 			query.Push(composed, protected)
 		}
-		//updater = append(updater, primitive.M{
-		//	"$set": primitive.M{
-		//		"_x": primitive.NewObjectID(),
-		//		"_v": time.Now().Unix(),
-		//	},
-		//})
+
 		protected.Restate()
+
+		setCmd, _ := updaterDoc["$set"].(primitive.M)
+		if reflect2.IsNil(setCmd) {
+			setCmd = primitive.M{}
+		}
+		protected.PutToDocument(setCmd)
+		updaterDoc["$set"] = setCmd
 	}
 
 	defer func() {

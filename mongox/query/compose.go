@@ -107,28 +107,19 @@ func applySkip(query *Query, filter interface{}) (ok bool) {
 
 func applyProtection(query *Query, filter interface{}) (ok bool) {
 
-	var x *primitive.ObjectID
-	var v *int64
+	var keyDoc = primitive.M{}
 
 	switch filter := filter.(type) {
 	case protection.Key:
-		x = &filter.X
-		v = &filter.V
+		filter.PutToDocument(keyDoc)
 	case *protection.Key:
-		x = &filter.X
-		v = &filter.V
+		filter.PutToDocument(keyDoc)
 
 	default:
 		return false
 	}
 
-	if x.IsZero() {
-		query.And(primitive.M{"_x": primitive.M{"$exists": false}})
-		query.And(primitive.M{"_v": primitive.M{"$exists": false}})
-	} else {
-		query.And(primitive.M{"_x": *x})
-		query.And(primitive.M{"_v": *v})
-	}
+	query.And(keyDoc)
 
 	return true
 }
