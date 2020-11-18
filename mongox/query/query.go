@@ -11,6 +11,7 @@ type Query struct {
 	sorter    Sorter
 	skipper   Skipper
 	preloader Preloader
+	updater   Updater
 	ondecode  Callbacks
 	onclose   Callbacks
 }
@@ -62,6 +63,16 @@ func (q *Query) Skipper() (skip *int64) {
 	}
 
 	return q.skipper.Skip()
+}
+
+// Updater is an update command for a query
+func (q *Query) Updater() (update bson.A) {
+
+	if q.updater == nil {
+		return
+	}
+
+	return q.updater.Update()
 }
 
 // Preloader is a preloader list for a query

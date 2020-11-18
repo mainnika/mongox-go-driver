@@ -38,6 +38,7 @@ func Push(q *Query, f interface{}) (ok bool) {
 	ok = ok || applySkip(q, f)
 	ok = ok || applyProtection(q, f)
 	ok = ok || applyPreloader(q, f)
+	ok = ok || applyUpdater(q, f)
 	ok = ok || applyCallbacks(q, f)
 
 	return ok
@@ -119,6 +120,16 @@ func applyPreloader(q *Query, f interface{}) (ok bool) {
 
 	if f, ok := f.(Preloader); ok {
 		q.preloader = f
+		return true
+	}
+
+	return false
+}
+
+func applyUpdater(q *Query, f interface{}) (ok bool) {
+
+	if f, ok := f.(Updater); ok {
+		q.updater = f
 		return true
 	}
 
