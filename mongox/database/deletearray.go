@@ -35,10 +35,14 @@ func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err 
 
 	zeroElem := reflect.Zero(targetSliceElemT)
 	targetLen := targetSliceV.Len()
+
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
+
 	collection := d.GetCollectionOf(zeroElem.Interface())
-	opts := options.Delete()
 	ids := primitive.A{}
-	composed := query.Compose(filters...)
 	ctx := query.WithContext(d.Context(), composed)
 
 	for i := 0; i < targetLen; i++ {
@@ -61,7 +65,7 @@ func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err 
 
 	composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
 
-	result, err := collection.DeleteMany(ctx, composed.M(), opts)
+	result, err := collection.DeleteMany(ctx, composed.M(), options.Delete())
 	if err != nil {
 		return
 	}

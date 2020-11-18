@@ -13,13 +13,17 @@ import (
 // UpdateOne updates a single document in the database and loads it into target
 func (d *Database) UpdateOne(target interface{}, filters ...interface{}) (err error) {
 
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
+
 	collection := d.GetCollectionOf(target)
-	opts := options.FindOneAndUpdate()
 	protected := base.GetProtection(target)
-	composed := query.Compose(filters...)
 	ctx := query.WithContext(d.Context(), composed)
 	updater := composed.Updater()
 
+	opts := options.FindOneAndUpdate()
 	opts.SetReturnDocument(options.After)
 
 	if protected != nil {

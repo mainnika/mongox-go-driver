@@ -15,12 +15,16 @@ import (
 // DeleteOne removes a document from a database and then returns it into target
 func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err error) {
 
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
+
 	collection := d.GetCollectionOf(target)
-	opts := &options.FindOneAndDeleteOptions{}
-	composed := query.Compose(filters...)
 	protected := base.GetProtection(target)
 	ctx := query.WithContext(d.Context(), composed)
 
+	opts := options.FindOneAndDelete()
 	opts.Sort = composed.Sorter()
 
 	if !reflect2.IsNil(target) {

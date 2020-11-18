@@ -12,12 +12,16 @@ import (
 type applyFilterFunc = func(query *Query, filter interface{}) (ok bool)
 
 // Compose is a function to compose filters into a single query
-func Compose(filters ...interface{}) (query *Query) {
+func Compose(filters ...interface{}) (query *Query, err error) {
 
 	query = &Query{}
 
 	for _, filter := range filters {
-		if !Push(query, filter) {
+		ok, err := Push(query, filter)
+		if err != nil {
+			return nil, fmt.Errorf("invalid filter %v, %w", filter, err)
+		}
+		if !ok {
 			panic(fmt.Errorf("unknown filter %v", filter))
 		}
 	}
@@ -26,12 +30,19 @@ func Compose(filters ...interface{}) (query *Query) {
 }
 
 // Push applies single filter to a query
-func Push(query *Query, filter interface{}) (ok bool) {
+func Push(query *Query, filter interface{}) (ok bool, err error) {
 
 	ok = reflect2.IsNil(filter)
 	if ok {
 		return
 	}
+
+	valider, hasValider := filter.(Valider)
+	if hasValider {
+		err = valider.Valid()
+	}
+	if err != nil {
+		return
 	}
 
 	for _, applier := range []applyFilterFunc{

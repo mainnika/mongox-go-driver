@@ -13,15 +13,19 @@ import (
 // SaveOne saves a single source document to the database
 func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err error) {
 
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
+
 	collection := d.GetCollectionOf(source)
-	opts := options.FindOneAndReplace()
 	id := base.GetID(source)
 	protected := base.GetProtection(source)
-	composed := query.Compose(filters...)
 	ctx := query.WithContext(d.Context(), composed)
 
 	composed.And(primitive.M{"_id": id})
 
+	opts := options.FindOneAndReplace()
 	opts.SetUpsert(true)
 	opts.SetReturnDocument(options.After)
 

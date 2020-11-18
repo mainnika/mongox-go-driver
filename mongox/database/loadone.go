@@ -11,7 +11,11 @@ import (
 // LoadOne function loads a first single target document by a query
 func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err error) {
 
-	composed := query.Compose(append(filters, query.Limit(1))...)
+	composed, err := query.Compose(append(filters, query.Limit(1))...)
+	if err != nil {
+		return
+	}
+
 	hasPreloader, _ := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 

@@ -31,7 +31,11 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		panic(fmt.Errorf("target slice should contain ptrs"))
 	}
 
-	composed := query.Compose(filters...)
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
+
 	zeroElem := reflect.Zero(targetSliceElemT)
 	hasPreloader, _ := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)

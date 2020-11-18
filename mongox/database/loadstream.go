@@ -10,11 +10,15 @@ import (
 // LoadStream function loads documents one by one into a target channel
 func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loader mongox.StreamLoader, err error) {
 
-	var cursor *mongox.Cursor
+	composed, err := query.Compose(filters...)
+	if err != nil {
+		return
+	}
 
-	composed := query.Compose(filters...)
 	hasPreloader, _ := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
+
+	var cursor *mongox.Cursor
 
 	if hasPreloader {
 		cursor, err = d.createAggregateLoad(target, composed)
