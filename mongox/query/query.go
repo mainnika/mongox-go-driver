@@ -1,12 +1,12 @@
 package query
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// Query is an enchanched bson.M map
+// Query is an enchanched primitive.M map
 type Query struct {
-	m         bson.M
+	m         primitive.M
 	limiter   Limiter
 	sorter    Sorter
 	skipper   Skipper
@@ -17,16 +17,16 @@ type Query struct {
 }
 
 // And function pushes the elem query to the $and array of the query
-func (q *Query) And(elem bson.M) (query *Query) {
+func (q *Query) And(elem primitive.M) (query *Query) {
 
 	if q.m == nil {
-		q.m = bson.M{}
+		q.m = primitive.M{}
 	}
 
-	queries, exists := q.m["$and"].(bson.A)
+	queries, exists := q.m["$and"].(primitive.A)
 
 	if !exists {
-		q.m["$and"] = bson.A{elem}
+		q.m["$and"] = primitive.A{elem}
 		return q
 	}
 
@@ -66,7 +66,7 @@ func (q *Query) Skipper() (skip *int64) {
 }
 
 // Updater is an update command for a query
-func (q *Query) Updater() (update bson.A) {
+func (q *Query) Updater() (update primitive.A) {
 
 	if q.updater == nil {
 		return
@@ -103,6 +103,6 @@ func (q *Query) Empty() (isEmpty bool) {
 }
 
 // M returns underlying query map
-func (q *Query) M() (m bson.M) {
+func (q *Query) M() (m primitive.M) {
 	return q.m
 }

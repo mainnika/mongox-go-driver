@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/modern-go/reflect2"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
@@ -44,10 +43,10 @@ func Push(q *Query, f interface{}) (ok bool) {
 	return ok
 }
 
-// applyBson is a fallback for a custom bson.M
+// applyBson is a fallback for a custom primitive.M
 func applyBson(q *Query, f interface{}) (ok bool) {
 
-	if f, ok := f.(bson.M); ok {
+	if f, ok := f.(primitive.M); ok {
 		q.And(f)
 		return true
 	}

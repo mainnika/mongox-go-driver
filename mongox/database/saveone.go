@@ -3,7 +3,6 @@ package database
 import (
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -21,7 +20,7 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 	composed := query.Compose(filters...)
 	ctx := query.WithContext(d.Context(), composed)
 
-	composed.And(bson.M{"_id": id})
+	composed.And(primitive.M{"_id": id})
 
 	opts.SetUpsert(true)
 	opts.SetReturnDocument(options.After)

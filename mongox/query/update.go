@@ -1,20 +1,20 @@
 package query
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Updater is a filter to update the data
 type Updater interface {
-	Update() (update bson.A)
+	Update() (update primitive.A)
 }
 
 // Update is a simple implementations of the Updater filter
-type Update bson.M
+type Update primitive.M
 
 var _ Updater = &Update{}
 
 // Update returns an update command
-func (u Update) Update() (update bson.A) {
-	return bson.A{bson.M(u)}
+func (u Update) Update() (update primitive.A) {
+	return primitive.A{primitive.M(u)}
 }
