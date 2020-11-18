@@ -45,7 +45,8 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 
 	hasNext := result.Next(ctx)
 	if result.Err() != nil {
-		return err
+		err = result.Err()
+		return
 	}
 	if !hasNext {
 		return mongox.ErrNoDocuments
