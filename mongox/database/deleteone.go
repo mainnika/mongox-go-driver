@@ -2,7 +2,6 @@ package database
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -33,8 +32,7 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 
 	if protected != nil {
 		query.Push(composed, protected)
-		protected.X = primitive.NewObjectID()
-		protected.V = time.Now().Unix()
+		protected.Restate()
 	}
 
 	defer func() {

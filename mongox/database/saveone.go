@@ -1,8 +1,6 @@
 package database
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -31,8 +29,7 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 
 	if protected != nil {
 		query.Push(composed, protected)
-		protected.X = primitive.NewObjectID()
-		protected.V = time.Now().Unix()
+		protected.Restate()
 	}
 
 	defer func() {

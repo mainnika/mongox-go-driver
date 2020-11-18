@@ -38,6 +38,7 @@ func (d *Database) UpdateOne(target interface{}, filters ...interface{}) (err er
 		//		"_v": time.Now().Unix(),
 		//	},
 		//})
+		protected.Restate()
 	}
 
 	defer func() {
