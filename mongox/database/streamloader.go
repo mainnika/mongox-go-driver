@@ -73,9 +73,20 @@ func (l *StreamLoader) Cursor() (cursor *mongox.Cursor) {
 // Close cursor
 func (l *StreamLoader) Close() (err error) {
 
-	_ = l.query.OnClose().Invoke(l.ctx, l.target)
+	closerr := l.cur.Close(l.ctx)
+	invokerr := l.query.OnClose().Invoke(l.ctx, l.target)
 
-	return l.cur.Close(l.ctx)
+	if closerr != nil {
+		err = closerr
+		return
+	}
+
+	if invokerr != nil {
+		err = invokerr
+		return
+	}
+
+	return
 }
 
 func (l *StreamLoader) Err() (err error) {

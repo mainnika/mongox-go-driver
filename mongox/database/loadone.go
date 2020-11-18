@@ -17,6 +17,23 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 
 	var result *mongox.Cursor
 
+	defer func() {
+
+		if result != nil {
+			closerr := result.Close(ctx)
+			if err == nil {
+				err = closerr
+			}
+		}
+
+		invokerr := composed.OnClose().Invoke(ctx, target)
+		if err == nil {
+			err = invokerr
+		}
+
+		return
+	}()
+
 	if hasPreloader {
 		result, err = d.createAggregateLoad(target, composed)
 	} else {
@@ -25,8 +42,6 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 	if err != nil {
 		return fmt.Errorf("can't create find result: %w", err)
 	}
-
-	defer composed.OnClose().Invoke(ctx, target)
 
 	hasNext := result.Next(ctx)
 	if result.Err() != nil {

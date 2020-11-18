@@ -46,13 +46,20 @@ func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err 
 		ids = append(ids, base.GetID(elem.Interface()))
 	}
 
+	defer func() {
+		invokerr := composed.OnClose().Invoke(ctx, target)
+		if err == nil {
+			err = invokerr
+		}
+
+		return
+	}()
+
 	if len(ids) == 0 {
 		return fmt.Errorf("can't delete zero elements")
 	}
 
 	composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
-
-	defer composed.OnClose().Invoke(ctx, target)
 
 	result, err := collection.DeleteMany(ctx, composed.M(), opts)
 	if err != nil {

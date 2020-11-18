@@ -39,6 +39,23 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	var result *mongox.Cursor
 	var i int
 
+	defer func() {
+
+		if result != nil {
+			closerr := result.Close(ctx)
+			if err == nil {
+				err = closerr
+			}
+		}
+
+		invokerr := composed.OnClose().Invoke(ctx, target)
+		if err == nil {
+			err = invokerr
+		}
+
+		return
+	}()
+
 	if hasPreloader {
 		result, err = d.createAggregateLoad(zeroElem.Interface(), composed)
 	} else {
@@ -48,8 +65,6 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		err = fmt.Errorf("can't create find result: %w", err)
 		return
 	}
-
-	defer composed.OnClose().Invoke(ctx, target)
 
 	for i = 0; result.Next(ctx); {
 
@@ -68,13 +83,11 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 			err = result.Decode(elem)
 		}
 		if err != nil {
-			_ = result.Close(ctx)
 			return
 		}
 
 		err = composed.OnDecode().Invoke(ctx, elem)
 		if err != nil {
-			_ = result.Close(ctx)
 			return
 		}
 
@@ -84,5 +97,5 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 	targetSliceV = targetSliceV.Slice(0, i)
 	targetV.Elem().Set(targetSliceV)
 
-	return result.Close(ctx)
+	return
 }

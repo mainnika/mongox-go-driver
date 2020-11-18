@@ -33,7 +33,14 @@ func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err er
 		protected.V = time.Now().Unix()
 	}
 
-	defer composed.OnClose().Invoke(ctx, target)
+	defer func() {
+		invokerr := composed.OnClose().Invoke(ctx, target)
+		if err == nil {
+			err = invokerr
+		}
+
+		return
+	}()
 
 	result := collection.FindOneAndDelete(ctx, composed.M(), opts)
 	if result.Err() != nil {

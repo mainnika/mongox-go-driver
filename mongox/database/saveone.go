@@ -32,7 +32,14 @@ func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err erro
 		protected.V = time.Now().Unix()
 	}
 
-	defer composed.OnClose().Invoke(ctx, source)
+	defer func() {
+		invokerr := composed.OnClose().Invoke(ctx, source)
+		if err == nil {
+			err = invokerr
+		}
+
+		return
+	}()
 
 	result := collection.FindOneAndReplace(ctx, composed.M(), source, opts)
 	if result.Err() != nil {
