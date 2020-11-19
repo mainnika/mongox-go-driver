@@ -37,9 +37,9 @@ func Push(query *Query, filter interface{}) (ok bool, err error) {
 		return
 	}
 
-	valider, hasValider := filter.(Valider)
-	if hasValider {
-		err = valider.Valid()
+	validator, hasValidator := filter.(Validator)
+	if hasValidator {
+		err = validator.Validate()
 	}
 	if err != nil {
 		return

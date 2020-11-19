@@ -1,6 +1,6 @@
 package query
 
-// Valider is a filter to validate the filter
-type Valider interface {
-	Valid() (err error)
+// Validator is a filter to validate the filter
+type Validator interface {
+	Validate() (err error)
 }
