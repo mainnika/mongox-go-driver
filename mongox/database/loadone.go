@@ -56,7 +56,12 @@ func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err erro
 		return mongox.ErrNoDocuments
 	}
 
-	base.Reset(target)
+	if created := base.Reset(target); created {
+		err = composed.OnCreate().Invoke(ctx, target)
+	}
+	if err != nil {
+		return
+	}
 
 	err = result.Decode(target)
 	if err != nil {

@@ -17,6 +17,7 @@ type Query struct {
 	updater   Updater
 	ondecode  Callbacks
 	onclose   Callbacks
+	oncreate  Callbacks
 }
 
 // And function pushes the elem query to the $and array of the query
@@ -119,6 +120,11 @@ func (q *Query) OnDecode() (callbacks Callbacks) {
 }
 
 func (q *Query) OnClose() (callbacks Callbacks) {
+	return q.onclose
+}
+
+// OnCreate callback is called if the mongox creates a new document instance during loading
+func (q *Query) OnCreate() (callbacks Callbacks) {
 	return q.onclose
 }
 

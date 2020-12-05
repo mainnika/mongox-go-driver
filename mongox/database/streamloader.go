@@ -35,7 +35,12 @@ func (l *StreamLoader) DecodeNext() (err error) {
 // Decode function decodes the current cursor document into the target
 func (l *StreamLoader) Decode() (err error) {
 
-	base.Reset(l.target)
+	if created := base.Reset(l.target); created {
+		err = l.query.OnDecode().Invoke(l.ctx, l.target)
+	}
+	if err != nil {
+		return
+	}
 
 	err = l.cur.Decode(l.target)
 	if err != nil {
