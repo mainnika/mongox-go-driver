@@ -6,7 +6,7 @@ import (
 )
 
 // Reset function creates new zero object for the target pointer
-func Reset(target interface{}) {
+func Reset(target interface{}) (created bool) {
 
 	type resetter interface {
 		Reset()
@@ -15,7 +15,7 @@ func Reset(target interface{}) {
 	resettable, canReset := target.(resetter)
 	if canReset {
 		resettable.Reset()
-		return
+		return false
 	}
 
 	v := reflect.ValueOf(target)
@@ -27,4 +27,6 @@ func Reset(target interface{}) {
 	zero := reflect.Zero(t)
 
 	v.Elem().Set(zero)
+
+	return true
 }
