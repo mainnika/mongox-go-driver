@@ -70,13 +70,12 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		return
 	}
 
-	for i = 0; result.Next(ctx); {
+	for i = 0; result.Next(ctx); i++ {
 
 		var elem interface{}
 
-		if targetSliceV.Len() == i {
+		if i == targetSliceV.Len() {
 			value := reflect.New(targetSliceElemT.Elem())
-			err = result.Decode(value.Interface())
 			elem = value.Interface()
 
 			err = composed.OnCreate().Invoke(ctx, elem)
@@ -84,9 +83,12 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 				return
 			}
 
-			if err == nil {
-				targetSliceV = reflect.Append(targetSliceV, value)
+			err = result.Decode(elem)
+			if err != nil {
+				return
 			}
+
+			targetSliceV = reflect.Append(targetSliceV, value)
 		} else {
 			elem = targetSliceV.Index(i).Interface()
 
@@ -98,17 +100,15 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 			}
 
 			err = result.Decode(elem)
-		}
-		if err != nil {
-			return
+			if err != nil {
+				return
+			}
 		}
 
 		err = composed.OnDecode().Invoke(ctx, elem)
 		if err != nil {
 			return
 		}
-
-		i++
 	}
 
 	targetSliceV = targetSliceV.Slice(0, i)
