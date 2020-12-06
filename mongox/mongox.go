@@ -35,8 +35,8 @@ type Database interface {
 // StreamLoader is a interface to control database cursor
 type StreamLoader interface {
 	Cursor() (cursor *Cursor)
-	DecodeNext() (err error)
-	Decode() (err error)
+	DecodeNextMsg(i interface{}) (err error)
+	DecodeMsg(i interface{}) (err error)
 	Next() (err error)
 	Close() (err error)
 	Err() (err error)
