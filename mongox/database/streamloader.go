@@ -71,11 +71,12 @@ func (l *StreamLoader) Next() (err error) {
 	return
 }
 
+// Cursor returns the underlying cursor
 func (l *StreamLoader) Cursor() (cursor *mongox.Cursor) {
 	return l.cur
 }
 
-// Close cursor
+// Close stream loader and the underlying cursor
 func (l *StreamLoader) Close() (err error) {
 
 	closerr := l.cur.Close(l.ctx)
@@ -94,6 +95,7 @@ func (l *StreamLoader) Close() (err error) {
 	return
 }
 
+// Err returns the last error
 func (l *StreamLoader) Err() (err error) {
 	return l.cur.Err()
 }

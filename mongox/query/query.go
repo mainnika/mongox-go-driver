@@ -119,6 +119,7 @@ func (q *Query) OnDecode() (callbacks Callbacks) {
 	return q.ondecode
 }
 
+// OnClose callback is called after the mongox ends a loading procedure
 func (q *Query) OnClose() (callbacks Callbacks) {
 	return q.onclose
 }
