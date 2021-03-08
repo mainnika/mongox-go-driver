@@ -195,17 +195,20 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 				continue
 			}
 
-			isSlice := el.Field(i).Kind() == reflect.Slice
+			field := elType.Field(i)
+			fieldType := field.Type
 
-			typ := el.Field(i).Type()
-			if typ.Kind() == reflect.Slice {
-				typ = typ.Elem()
+			isSlice := fieldType.Kind() == reflect.Slice
+			if isSlice {
+				fieldType = fieldType.Elem()
 			}
-			if typ.Kind() != reflect.Ptr {
+
+			isPtr := fieldType.Kind() != reflect.Ptr
+			if isPtr {
 				panic(fmt.Errorf("preload field should have ptr type"))
 			}
 
-			lookupCollection := d.GetCollectionOf(reflect.Zero(typ).Interface())
+			lookupCollection := d.GetCollectionOf(reflect.Zero(fieldType).Interface())
 			lookupVars := primitive.M{"selector": "$" + localField}
 			lookupPipeline := primitive.A{
 				primitive.M{"$match": primitive.M{"$expr": primitive.M{"$eq": primitive.A{"$" + foreignField, "$$selector"}}}},
