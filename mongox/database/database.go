@@ -126,8 +126,12 @@ func (d *Database) createAggregateLoad(target interface{}, composed *query.Query
 		pipeline = append(pipeline, primitive.M{"$limit": *composed.Limiter()})
 	}
 
-	el := reflect.ValueOf(target).Elem()
+	el := reflect.ValueOf(target)
 	elType := el.Type()
+	if elType.Kind() == reflect.Ptr {
+		elType = elType.Elem()
+	}
+
 	numField := elType.NumField()
 	preloads, _ := composed.Preloader()
 
