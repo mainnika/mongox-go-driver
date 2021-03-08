@@ -30,7 +30,7 @@ func (d *Database) LoadStream(target interface{}, filters ...interface{}) (loade
 		return
 	}
 
-	loader = &StreamLoader{cur: cursor, ctx: ctx, ref: target, query: composed}
+	loader = &StreamLoader{cur: cursor, ctx: ctx, query: composed}
 
 	return
 }

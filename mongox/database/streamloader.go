@@ -13,7 +13,6 @@ type StreamLoader struct {
 	cur   *mongox.Cursor
 	query *query.Query
 	ctx   context.Context
-	ref   interface{}
 }
 
 // DecodeNextMsg decodes the next document to an interface or returns an error
@@ -80,7 +79,7 @@ func (l *StreamLoader) Cursor() (cursor *mongox.Cursor) {
 func (l *StreamLoader) Close() (err error) {
 
 	closerr := l.cur.Close(l.ctx)
-	invokerr := l.query.OnClose().Invoke(l.ctx, l.ref)
+	invokerr := l.query.OnClose().Invoke(l.ctx, nil)
 
 	if closerr != nil {
 		err = closerr
