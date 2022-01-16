@@ -1,4 +1,4 @@
-package base
+package base_test
 
 import (
 	"testing"
@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/jsonbased"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/oidbased"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base/stringbased"
@@ -35,8 +36,8 @@ func TestGetID(t *testing.T) {
 		stringbased.Primary `bson:",inline" json:",inline" collection:"3"`
 	}
 
-	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), GetID(&DocWithObjectID{oidbased.Primary{[12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}}}))
-	assert.Equal(t, primitive.D{{"1", "2"}}, GetID(&DocWithObject{jsonbased.Primary{primitive.D{{"1", "2"}}}}))
-	assert.Equal(t, "foobar", GetID(&DocWithString{stringbased.Primary{"foobar"}}))
-	assert.Equal(t, 420, GetID(&DocWithCustomInterface{ID: 420}))
+	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), base.GetID(&DocWithObjectID{Primary: oidbased.Primary{ID: [12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}}}))
+	assert.Equal(t, primitive.D{{"1", "2"}}, base.GetID(&DocWithObject{Primary: jsonbased.Primary{ID: primitive.D{{"1", "2"}}}}))
+	assert.Equal(t, "foobar", base.GetID(&DocWithString{Primary: stringbased.Primary{ID: "foobar"}}))
+	assert.Equal(t, 420, base.GetID(&DocWithCustomInterface{ID: 420}))
 }

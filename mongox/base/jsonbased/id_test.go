@@ -1,4 +1,4 @@
-package jsonbased
+package jsonbased_test
 
 import (
 	"encoding/json"
@@ -8,15 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox-testing/database"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/jsonbased"
 )
 
 func Test_GetID(t *testing.T) {
 
 	type DocWithObject struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObject{Primary{primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc := &DocWithObject{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
 
 	assert.Equal(t, primitive.D{{"1", "one"}, {"2", "two"}}, doc.GetID())
 }
@@ -24,10 +25,10 @@ func Test_GetID(t *testing.T) {
 func Test_SetID(t *testing.T) {
 
 	type DocWithObject struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObject{Primary{primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc := &DocWithObject{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
 
 	doc.SetID(primitive.D{{"3", "three"}, {"4", "you"}})
 
@@ -38,7 +39,7 @@ func Test_SetID(t *testing.T) {
 func Test_SaveLoad(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	db, err := database.NewEphemeral("")
@@ -48,7 +49,7 @@ func Test_SaveLoad(t *testing.T) {
 
 	defer db.Close()
 
-	doc1 := &DocWithObjectID{Primary{primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc1 := &DocWithObjectID{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
 	doc2 := &DocWithObjectID{}
 
 	err = db.SaveOne(doc1)
@@ -68,11 +69,10 @@ func Test_SaveLoad(t *testing.T) {
 func Test_Marshal(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	id := primitive.D{{"1", "one"}, {"2", "two"}}
-	doc := &DocWithObjectID{Primary{id}}
+	doc := &DocWithObjectID{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)

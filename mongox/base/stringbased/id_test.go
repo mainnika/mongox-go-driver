@@ -1,4 +1,4 @@
-package stringbased
+package stringbased_test
 
 import (
 	"encoding/json"
@@ -7,15 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox-testing/database"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/stringbased"
 )
 
 func Test_GetID(t *testing.T) {
 
 	type DocWithString struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithString{Primary{"foobar"}}
+	doc := &DocWithString{Primary: stringbased.Primary{ID: "foobar"}}
 
 	assert.Equal(t, "foobar", doc.GetID())
 }
@@ -23,10 +24,10 @@ func Test_GetID(t *testing.T) {
 func Test_SetID(t *testing.T) {
 
 	type DocWithString struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithString{Primary{"foobar"}}
+	doc := &DocWithString{Primary: stringbased.Primary{ID: "foobar"}}
 
 	doc.SetID("rockrockrock")
 
@@ -37,7 +38,7 @@ func Test_SetID(t *testing.T) {
 func Test_SaveLoad(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	db, err := database.NewEphemeral("")
@@ -47,7 +48,7 @@ func Test_SaveLoad(t *testing.T) {
 
 	defer db.Close()
 
-	doc1 := &DocWithObjectID{Primary{"foobar"}}
+	doc1 := &DocWithObjectID{Primary: stringbased.Primary{ID: "foobar"}}
 	doc2 := &DocWithObjectID{}
 
 	err = db.SaveOne(doc1)
@@ -67,10 +68,10 @@ func Test_SaveLoad(t *testing.T) {
 func Test_Marshal(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{Primary{"foobar"}}
+	doc := &DocWithObjectID{Primary: stringbased.Primary{ID: "foobar"}}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)

@@ -1,4 +1,4 @@
-package oidbased
+package oidbased_test
 
 import (
 	"encoding/json"
@@ -8,15 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox-testing/database"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/oidbased"
 )
 
 func Test_GetID(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{Primary{[12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}}}
+	doc := &DocWithObjectID{Primary: oidbased.Primary{ID: [12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}}}
 
 	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), doc.GetID())
 }
@@ -24,7 +25,7 @@ func Test_GetID(t *testing.T) {
 func Test_SetID(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	doc := &DocWithObjectID{}
@@ -38,7 +39,7 @@ func Test_SetID(t *testing.T) {
 func Test_SaveLoad(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	db, err := database.NewEphemeral("")
@@ -68,11 +69,11 @@ func Test_SaveLoad(t *testing.T) {
 func Test_Marshal(t *testing.T) {
 
 	type DocWithObjectID struct {
-		Primary `bson:",inline" json:",inline" collection:"1"`
+		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	id, _ := primitive.ObjectIDFromHex("feadbeeffeadbeeffeadbeef")
-	doc := &DocWithObjectID{Primary{id}}
+	doc := &DocWithObjectID{Primary: oidbased.Primary{ID: id}}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)
