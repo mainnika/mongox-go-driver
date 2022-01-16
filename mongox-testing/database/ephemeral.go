@@ -2,9 +2,8 @@ package database
 
 import (
 	"context"
-	"math/rand"
-	"strconv"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -20,7 +19,7 @@ type EphemeralDatabase struct {
 // NewEphemeral creates new mongo connection
 func NewEphemeral(URI string) (db *EphemeralDatabase, err error) {
 
-	name := strconv.Itoa(rand.Int())
+	name := primitive.NewObjectID().Hex()
 	opts := options.Client().ApplyURI(URI)
 	client, err := mongo.Connect(context.Background(), opts)
 
