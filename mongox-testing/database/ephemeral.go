@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"os"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,13 +12,27 @@ import (
 	"github.com/mainnika/mongox-go-driver/v2/mongox/database"
 )
 
+// defaultURI is a mongodb uri that is being used by tests
+var defaultURI = "mongodb://localhost"
+
 // EphemeralDatabase is a temporary database connection that will be destroyed after close
 type EphemeralDatabase struct {
 	mongox.Database
 }
 
+func init() {
+	envURI := os.Getenv("MONGODB_URI")
+	if envURI != "" {
+		defaultURI = envURI
+	}
+}
+
 // NewEphemeral creates new mongo connection
 func NewEphemeral(URI string) (db *EphemeralDatabase, err error) {
+
+	if URI == "" {
+		URI = defaultURI
+	}
 
 	name := primitive.NewObjectID().Hex()
 	opts := options.Client().ApplyURI(URI)

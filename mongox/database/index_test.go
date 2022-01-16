@@ -11,7 +11,7 @@ import (
 
 func TestDatabase_Ensure(t *testing.T) {
 
-	db, err := database.NewEphemeral("mongodb://localhost")
+	db, err := database.NewEphemeral("")
 	if err != nil {
 		t.Fatal(err)
 	}

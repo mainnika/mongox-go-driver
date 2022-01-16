@@ -41,7 +41,7 @@ func Test_SaveLoad(t *testing.T) {
 		Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	db, err := database.NewEphemeral("mongodb://localhost")
+	db, err := database.NewEphemeral("")
 	if err != nil {
 		t.Fatal(err)
 	}
