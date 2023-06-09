@@ -1,8 +1,6 @@
 package database
 
 import (
-	"fmt"
-
 	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
@@ -10,68 +8,39 @@ import (
 
 // LoadOne function loads a first single target document by a query
 func (d *Database) LoadOne(target interface{}, filters ...interface{}) (err error) {
-
 	composed, err := query.Compose(append(filters, query.Limit(1))...)
 	if err != nil {
-		return
+		return err
 	}
 
-	_, hasPreloader := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 
-	var result *mongox.Cursor
+	defer func() { _ = composed.OnClose().Invoke(ctx, target) }()
 
-	defer func() {
-
-		if result != nil {
-			closerr := result.Close(ctx)
-			if err == nil {
-				err = closerr
-			}
-		}
-
-		invokerr := composed.OnClose().Invoke(ctx, target)
-		if err == nil {
-			err = invokerr
-		}
-
-		return
-	}()
-
-	if hasPreloader {
-		result, err = d.createAggregateLoad(target, composed)
-	} else {
-		result, err = d.createSimpleLoad(target, composed)
-	}
+	cur, err := d.createCursor(target, composed)
 	if err != nil {
-		return fmt.Errorf("can't create find result: %w", err)
+		return err
 	}
+	defer func() { _ = cur.Close(ctx) }()
 
-	hasNext := result.Next(ctx)
-	if result.Err() != nil {
-		err = result.Err()
-		return
+	hasNext := cur.Next(ctx)
+	if cur.Err() != nil {
+		return cur.Err()
 	}
 	if !hasNext {
 		return mongox.ErrNoDocuments
 	}
 
 	if created := base.Reset(target); created {
-		err = composed.OnCreate().Invoke(ctx, target)
-	}
-	if err != nil {
-		return
+		_ = composed.OnCreate().Invoke(ctx, target)
 	}
 
-	err = result.Decode(target)
+	err = cur.Decode(target)
 	if err != nil {
-		return
+		return err
 	}
 
-	err = composed.OnDecode().Invoke(ctx, target)
-	if err != nil {
-		return
-	}
+	_ = composed.OnDecode().Invoke(ctx, target)
 
-	return
+	return nil
 }

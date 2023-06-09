@@ -11,23 +11,21 @@ import (
 )
 
 func Test_GetID(t *testing.T) {
-
 	type DocWithString struct {
 		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithString{Primary: stringbased.Primary{ID: "foobar"}}
+	doc := &DocWithString{Primary: stringbased.New("foobar")}
 
 	assert.Equal(t, "foobar", doc.GetID())
 }
 
 func Test_SetID(t *testing.T) {
-
 	type DocWithString struct {
 		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithString{Primary: stringbased.Primary{ID: "foobar"}}
+	doc := &DocWithString{Primary: stringbased.New("foobar")}
 
 	doc.SetID("rockrockrock")
 
@@ -36,7 +34,6 @@ func Test_SetID(t *testing.T) {
 }
 
 func Test_SaveLoad(t *testing.T) {
-
 	type DocWithObjectID struct {
 		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
@@ -46,9 +43,9 @@ func Test_SaveLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
-	doc1 := &DocWithObjectID{Primary: stringbased.Primary{ID: "foobar"}}
+	doc1 := &DocWithObjectID{Primary: stringbased.New("foobar")}
 	doc2 := &DocWithObjectID{}
 
 	err = db.SaveOne(doc1)
@@ -66,12 +63,11 @@ func Test_SaveLoad(t *testing.T) {
 }
 
 func Test_Marshal(t *testing.T) {
-
 	type DocWithObjectID struct {
 		stringbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{Primary: stringbased.Primary{ID: "foobar"}}
+	doc := &DocWithObjectID{Primary: stringbased.New("foobar")}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)

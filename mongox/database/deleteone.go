@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 
 	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,51 +14,53 @@ import (
 
 // DeleteOne removes a document from a database and then returns it into target
 func (d *Database) DeleteOne(target interface{}, filters ...interface{}) (err error) {
-
 	composed, err := query.Compose(filters...)
 	if err != nil {
-		return
+		return err
 	}
 
-	collection := d.GetCollectionOf(target)
-	protected := base.GetProtection(target)
-	ctx := query.WithContext(d.Context(), composed)
-
-	opts := options.FindOneAndDelete()
-	opts.Sort = composed.Sorter()
+	collection, err := d.GetCollectionOf(target)
+	if err != nil {
+		return err
+	}
 
 	if !reflect2.IsNil(target) {
-		composed.And(primitive.M{"_id": base.GetID(target)})
+		targetID, err := base.GetID(target)
+		if err != nil {
+			return err
+		}
+
+		composed.And(primitive.M{"_id": targetID})
 	}
 
+	protected := protection.Get(target)
 	if protected != nil {
-		query.Push(composed, protected)
+		_, err := query.Push(composed, protected)
+		if err != nil {
+			return err
+		}
+
 		protected.Restate()
 	}
 
-	defer func() {
-		invokerr := composed.OnClose().Invoke(ctx, target)
-		if err == nil {
-			err = invokerr
-		}
+	ctx := query.WithContext(d.Context(), composed)
+	m := composed.M()
+	opts := options.FindOneAndDelete()
+	opts.Sort = composed.Sorter()
 
-		return
-	}()
+	defer func() { _ = composed.OnClose().Invoke(ctx, target) }()
 
-	result := collection.FindOneAndDelete(ctx, composed.M(), opts)
+	result := collection.FindOneAndDelete(ctx, m, opts)
 	if result.Err() != nil {
 		return fmt.Errorf("can't create find one and delete result: %w", result.Err())
 	}
 
 	err = result.Decode(target)
 	if err != nil {
-		return
+		return fmt.Errorf("can't decode find one and delete result: %w", err)
 	}
 
-	err = composed.OnDecode().Invoke(ctx, target)
-	if err != nil {
-		return
-	}
+	_ = composed.OnDecode().Invoke(ctx, target)
 
-	return
+	return nil
 }

@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -10,38 +11,37 @@ import (
 
 // SaveOne saves a single source document to the database
 func (d *Database) SaveOne(source interface{}, filters ...interface{}) (err error) {
+	collection, err := d.GetCollectionOf(source)
+	if err != nil {
+		return err
+	}
 
 	composed, err := query.Compose(filters...)
 	if err != nil {
-		return
+		return err
 	}
 
-	collection := d.GetCollectionOf(source)
-	id := base.GetID(source)
-	protected := base.GetProtection(source)
-	ctx := query.WithContext(d.Context(), composed)
-
+	id, err := base.GetID(source)
+	if err != nil {
+		return err
+	}
 	composed.And(primitive.M{"_id": id})
 
-	opts := options.FindOneAndReplace()
-	opts.SetUpsert(true)
-	opts.SetReturnDocument(options.After)
-
+	protected := protection.Get(source)
 	if protected != nil {
 		query.Push(composed, protected)
 		protected.Restate()
 	}
 
-	defer func() {
-		invokerr := composed.OnClose().Invoke(ctx, source)
-		if err == nil {
-			err = invokerr
-		}
+	ctx := query.WithContext(d.Context(), composed)
+	m := composed.M()
+	opts := options.FindOneAndReplace()
+	opts.SetUpsert(true)
+	opts.SetReturnDocument(options.After)
 
-		return
-	}()
+	defer func() { _ = composed.OnClose().Invoke(ctx, source) }()
 
-	result := collection.FindOneAndReplace(ctx, composed.M(), source, opts)
+	result := collection.FindOneAndReplace(ctx, m, source, opts)
 	if result.Err() != nil {
 		return result.Err()
 	}

@@ -14,18 +14,21 @@ import (
 )
 
 // IndexEnsure function ensures index in mongo collection of document
-//   `index:""` -- https://docs.mongodb.com/manual/indexes/#create-an-index
-//   `index:"-"` -- (descending)
-//   `index:"-,+foo,+-bar"` -- https://docs.mongodb.com/manual/core/index-compound
-//   `index:"-,+foo,+-bar,unique"` -- https://docs.mongodb.com/manual/core/index-unique
-//   `index:"-,+foo,+-bar,unique,allowNull"` -- https://docs.mongodb.com/manual/core/index-partial
-//   `index:"-,unique,allowNull,expireAfter=86400"` -- https://docs.mongodb.com/manual/core/index-ttl
-//   `index:"-,unique,allowNull,expireAfter={{.Expire}}"` -- evaluate index as a golang template with `cfg` arguments
+//
+//	`index:""` -- https://docs.mongodb.com/manual/indexes/#create-an-index
+//	`index:"-"` -- (descending)
+//	`index:"-,+foo,+-bar"` -- https://docs.mongodb.com/manual/core/index-compound
+//	`index:"-,+foo,+-bar,unique"` -- https://docs.mongodb.com/manual/core/index-unique
+//	`index:"-,+foo,+-bar,unique,allowNull"` -- https://docs.mongodb.com/manual/core/index-partial
+//	`index:"-,unique,allowNull,expireAfter=86400"` -- https://docs.mongodb.com/manual/core/index-ttl
+//	`index:"-,unique,allowNull,expireAfter={{.Expire}}"` -- evaluate index as a golang template with `cfg` arguments
 func (d *Database) IndexEnsure(cfg interface{}, document interface{}) (err error) {
-
 	el := reflect.ValueOf(document).Elem().Type()
 	numField := el.NumField()
-	documents := d.GetCollectionOf(document)
+	collection, err := d.GetCollectionOf(document)
+	if err != nil {
+		return err
+	}
 
 	for i := 0; i < numField; i++ {
 
@@ -126,7 +129,7 @@ func (d *Database) IndexEnsure(cfg interface{}, document interface{}) (err error
 			}
 		}
 
-		_, err = documents.Indexes().CreateOne(d.Context(), mongo.IndexModel{Keys: index, Options: opts})
+		_, err = collection.Indexes().CreateOne(d.Context(), mongo.IndexModel{Keys: index, Options: opts})
 		if err != nil {
 			return
 		}

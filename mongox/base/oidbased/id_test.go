@@ -12,24 +12,22 @@ import (
 )
 
 func Test_GetID(t *testing.T) {
-
 	type DocWithObjectID struct {
 		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{Primary: oidbased.Primary{ID: [12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}}}
+	doc := &DocWithObjectID{Primary: oidbased.New([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2})}
 
+	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), doc.Primary.ID)
 	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), doc.GetID())
 }
 
 func Test_SetID(t *testing.T) {
-
 	type DocWithObjectID struct {
 		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{}
-
+	doc := &DocWithObjectID{Primary: oidbased.Generate()}
 	doc.SetID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2})
 
 	assert.Equal(t, primitive.ObjectID([12]byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2}), doc.Primary.ID)
@@ -37,7 +35,6 @@ func Test_SetID(t *testing.T) {
 }
 
 func Test_SaveLoad(t *testing.T) {
-
 	type DocWithObjectID struct {
 		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
@@ -47,10 +44,10 @@ func Test_SaveLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
-	doc1 := &DocWithObjectID{}
-	doc2 := &DocWithObjectID{}
+	doc1 := &DocWithObjectID{Primary: oidbased.Generate()}
+	doc2 := &DocWithObjectID{Primary: oidbased.Generate()}
 
 	err = db.SaveOne(doc1)
 	assert.NoError(t, err)
@@ -67,13 +64,12 @@ func Test_SaveLoad(t *testing.T) {
 }
 
 func Test_Marshal(t *testing.T) {
-
 	type DocWithObjectID struct {
 		oidbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	id, _ := primitive.ObjectIDFromHex("feadbeeffeadbeeffeadbeef")
-	doc := &DocWithObjectID{Primary: oidbased.Primary{ID: id}}
+	doc := &DocWithObjectID{Primary: oidbased.New(id)}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)

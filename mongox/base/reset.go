@@ -7,7 +7,6 @@ import (
 
 // Reset function creates new zero object for the target pointer
 func Reset(target interface{}) (created bool) {
-
 	type resetter interface {
 		Reset()
 	}

@@ -19,8 +19,7 @@ type Database interface {
 	Client() (client *Client)
 	Context() (context context.Context)
 	Name() (name string)
-	New(ctx context.Context) (db Database)
-	GetCollectionOf(document interface{}) (collection *Collection)
+	GetCollectionOf(document interface{}) (collection *Collection, err error)
 	Count(target interface{}, filters ...interface{}) (count int64, err error)
 	DeleteArray(target interface{}, filters ...interface{}) (err error)
 	DeleteOne(target interface{}, filters ...interface{}) (err error)
@@ -54,8 +53,8 @@ type StringBased interface {
 	SetID(id string)
 }
 
-// JSONBased is an interface for documents that have object type for the _id field
-type JSONBased interface {
+// DocBased is an interface for documents that have object type for the _id field
+type DocBased interface {
 	GetID() (id primitive.D)
 	SetID(id primitive.D)
 }

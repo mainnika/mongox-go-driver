@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // LoadArray loads an array of documents from the database by query
 func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err error) {
-
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
 
@@ -31,61 +29,36 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 		panic(fmt.Errorf("target slice should contain ptrs"))
 	}
 
+	zeroElem := reflect.Zero(targetSliceElemT)
+
 	composed, err := query.Compose(filters...)
 	if err != nil {
-		return
+		return err
 	}
 
-	zeroElem := reflect.Zero(targetSliceElemT)
-	_, hasPreloader := composed.Preloader()
 	ctx := query.WithContext(d.Context(), composed)
 
-	var result *mongox.Cursor
-	var i int
+	defer func() { _ = composed.OnClose().Invoke(ctx, target) }()
 
-	defer func() {
-
-		if result != nil {
-			closerr := result.Close(ctx)
-			if err == nil {
-				err = closerr
-			}
-		}
-
-		invokerr := composed.OnClose().Invoke(ctx, target)
-		if err == nil {
-			err = invokerr
-		}
-
-		return
-	}()
-
-	if hasPreloader {
-		result, err = d.createAggregateLoad(zeroElem.Interface(), composed)
-	} else {
-		result, err = d.createSimpleLoad(zeroElem.Interface(), composed)
-	}
+	cur, err := d.createCursor(zeroElem.Interface(), composed)
 	if err != nil {
-		err = fmt.Errorf("can't create find result: %w", err)
-		return
+		return fmt.Errorf("can't create find result: %w", err)
 	}
 
-	for i = 0; result.Next(ctx); i++ {
+	defer func() { _ = cur.Close(ctx) }()
 
+	var i int
+	for i = 0; cur.Next(ctx); i++ {
 		var elem interface{}
-
 		if i == targetSliceV.Len() {
 			value := reflect.New(targetSliceElemT.Elem())
 			elem = value.Interface()
 
-			err = composed.OnCreate().Invoke(ctx, elem)
-			if err != nil {
-				return
-			}
+			_ = composed.OnCreate().Invoke(ctx, elem)
 
-			err = result.Decode(elem)
+			err = cur.Decode(elem)
 			if err != nil {
-				return
+				return err
 			}
 
 			targetSliceV = reflect.Append(targetSliceV, value)
@@ -93,26 +66,24 @@ func (d *Database) LoadArray(target interface{}, filters ...interface{}) (err er
 			elem = targetSliceV.Index(i).Interface()
 
 			if created := base.Reset(elem); created {
-				err = composed.OnCreate().Invoke(ctx, elem)
-			}
-			if err != nil {
-				return
+				_ = composed.OnCreate().Invoke(ctx, elem)
 			}
 
-			err = result.Decode(elem)
+			err = cur.Decode(elem)
 			if err != nil {
-				return
+				return err
 			}
 		}
 
-		err = composed.OnDecode().Invoke(ctx, elem)
-		if err != nil {
-			return
-		}
+		_ = composed.OnDecode().Invoke(ctx, elem)
+	}
+	err = cur.Err()
+	if err != nil {
+		return err
 	}
 
 	targetSliceV = targetSliceV.Slice(0, i)
 	targetV.Elem().Set(targetSliceV)
 
-	return
+	return nil
 }

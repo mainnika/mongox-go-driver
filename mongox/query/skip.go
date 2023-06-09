@@ -12,13 +12,12 @@ var _ Skipper = Skip(0)
 
 // Skip returns a skip number
 func (l Skip) Skip() (skip *int64) {
-
 	if l <= 0 {
-		return
+		return nil
 	}
 
 	skip = new(int64)
 	*skip = int64(l)
 
-	return
+	return skip
 }

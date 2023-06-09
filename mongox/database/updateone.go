@@ -1,72 +1,64 @@
 package database
 
 import (
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/protection"
 	"github.com/modern-go/reflect2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/mainnika/mongox-go-driver/v2/mongox/base"
 	"github.com/mainnika/mongox-go-driver/v2/mongox/query"
 )
 
 // UpdateOne updates a single document in the database and loads it into target
 func (d *Database) UpdateOne(target interface{}, filters ...interface{}) (err error) {
-
 	composed, err := query.Compose(filters...)
 	if err != nil {
-		return
+		return err
 	}
 
-	updaterDoc, err := composed.Updater()
+	update, err := composed.Updater()
 	if err != nil {
-		return
+		return err
 	}
 
-	collection := d.GetCollectionOf(target)
-	protected := base.GetProtection(target)
-	ctx := query.WithContext(d.Context(), composed)
-
-	opts := options.FindOneAndUpdate()
-	opts.SetReturnDocument(options.After)
-
+	protected := protection.Get(target)
 	if protected != nil {
 		if !protected.X.IsZero() {
 			query.Push(composed, protected)
 		}
-
 		protected.Restate()
 
-		setCmd, _ := updaterDoc["$set"].(primitive.M)
+		setCmd, _ := update["$set"].(primitive.M)
 		if reflect2.IsNil(setCmd) {
 			setCmd = primitive.M{}
 		}
-		protected.PutToDocument(setCmd)
-		updaterDoc["$set"] = setCmd
+		protected.Inject(setCmd)
+		update["$set"] = setCmd
 	}
 
-	defer func() {
-		invokerr := composed.OnClose().Invoke(ctx, target)
-		if err == nil {
-			err = invokerr
-		}
+	collection, err := d.GetCollectionOf(target)
+	if err != nil {
+		return err
+	}
 
-		return
-	}()
+	ctx := query.WithContext(d.Context(), composed)
+	m := composed.M()
+	opts := options.FindOneAndUpdate()
+	opts.SetReturnDocument(options.After)
 
-	result := collection.FindOneAndUpdate(ctx, composed.M(), updaterDoc, opts)
+	defer func() { _ = composed.OnClose().Invoke(ctx, target) }()
+
+	result := collection.FindOneAndUpdate(ctx, m, update, opts)
 	if result.Err() != nil {
 		return result.Err()
 	}
 
 	err = result.Decode(target)
 	if err != nil {
-		return
+		return err
 	}
 
-	err = composed.OnDecode().Invoke(ctx, target)
-	if err != nil {
-		return
-	}
+	_ = composed.OnDecode().Invoke(ctx, target)
 
-	return
+	return nil
 }

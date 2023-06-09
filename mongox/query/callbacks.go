@@ -18,9 +18,9 @@ func (c Callbacks) Invoke(ctx context.Context, iter interface{}) (err error) {
 	for _, cb := range c {
 		err = cb(ctx, iter)
 		if err != nil {
-			return
+			return err
 		}
 	}
 
-	return
+	return nil
 }

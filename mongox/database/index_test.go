@@ -1,6 +1,7 @@
 package database_test
 
 import (
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -142,7 +143,10 @@ func TestDatabase_Ensure(t *testing.T) {
 		err = db.IndexEnsure(tt.settings, tt.doc)
 		assert.NoError(t, err)
 
-		indexes, _ := db.GetCollectionOf(tt.doc).Indexes().List(db.Context())
+		collection, err := db.GetCollectionOf(tt.doc)
+		require.NoError(t, err)
+
+		indexes, _ := collection.Indexes().List(db.Context())
 		index := new(map[string]interface{})
 
 		indexes.Next(db.Context()) // skip _id_

@@ -1,6 +1,8 @@
 package mongox
 
 import (
+	"errors"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -17,4 +19,10 @@ var (
 	ErrMultipleIndexDrop   = mongo.ErrMultipleIndexDrop
 	ErrWrongClient         = mongo.ErrWrongClient
 	ErrNoDocuments         = mongo.ErrNoDocuments
+)
+
+var (
+	ErrMalformedBase     = errors.New("source contains malformed document base")
+	ErrUninitializedBase = errors.New("uninitialized document")
+	ErrNoCollection      = errors.New("no collection found")
 )

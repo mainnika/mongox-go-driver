@@ -20,3 +20,17 @@ func (p *Primary) GetID() (id string) {
 func (p *Primary) SetID(id string) {
 	p.ID = id
 }
+
+// New creates a new Primary structure with a defined _id
+func New(id string) Primary {
+	return Primary{ID: id}
+}
+
+func GetID(source mongox.StringBased) (id string, err error) {
+	id = source.GetID()
+	if id != "" {
+		return id, nil
+	}
+
+	return "", mongox.ErrUninitializedBase
+}

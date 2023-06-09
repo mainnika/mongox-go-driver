@@ -29,18 +29,24 @@ func init() {
 
 // NewEphemeral creates new mongo connection
 func NewEphemeral(URI string) (db *EphemeralDatabase, err error) {
+	return NewEphemeralWithContext(context.Background(), URI)
+}
 
+func NewEphemeralWithContext(ctx context.Context, URI string) (db *EphemeralDatabase, err error) {
 	if URI == "" {
 		URI = defaultURI
 	}
 
 	name := primitive.NewObjectID().Hex()
 	opts := options.Client().ApplyURI(URI)
-	client, err := mongo.Connect(context.Background(), opts)
+	client, err := mongo.Connect(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
 
-	db = &EphemeralDatabase{Database: database.NewDatabase(client, name)}
+	db = &EphemeralDatabase{Database: database.NewDatabase(ctx, client, name)}
 
-	return
+	return db, nil
 }
 
 // Close the connection and drop database

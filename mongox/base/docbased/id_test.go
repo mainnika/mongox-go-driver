@@ -1,4 +1,4 @@
-package jsonbased_test
+package docbased_test
 
 import (
 	"encoding/json"
@@ -8,27 +8,25 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mainnika/mongox-go-driver/v2/mongox-testing/database"
-	"github.com/mainnika/mongox-go-driver/v2/mongox/base/jsonbased"
+	"github.com/mainnika/mongox-go-driver/v2/mongox/base/docbased"
 )
 
 func Test_GetID(t *testing.T) {
-
 	type DocWithObject struct {
-		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
+		docbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObject{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc := &DocWithObject{Primary: docbased.New(primitive.E{"1", "one"}, primitive.E{"2", "two"})}
 
 	assert.Equal(t, primitive.D{{"1", "one"}, {"2", "two"}}, doc.GetID())
 }
 
 func Test_SetID(t *testing.T) {
-
 	type DocWithObject struct {
-		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
+		docbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObject{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc := &DocWithObject{Primary: docbased.New(primitive.E{"1", "one"}, primitive.E{"2", "two"})}
 
 	doc.SetID(primitive.D{{"3", "three"}, {"4", "you"}})
 
@@ -37,9 +35,8 @@ func Test_SetID(t *testing.T) {
 }
 
 func Test_SaveLoad(t *testing.T) {
-
 	type DocWithObjectID struct {
-		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
+		docbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
 	db, err := database.NewEphemeral("")
@@ -47,9 +44,9 @@ func Test_SaveLoad(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
-	doc1 := &DocWithObjectID{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc1 := &DocWithObjectID{Primary: docbased.New(primitive.E{"1", "one"}, primitive.E{"2", "two"})}
 	doc2 := &DocWithObjectID{}
 
 	err = db.SaveOne(doc1)
@@ -67,12 +64,11 @@ func Test_SaveLoad(t *testing.T) {
 }
 
 func Test_Marshal(t *testing.T) {
-
 	type DocWithObjectID struct {
-		jsonbased.Primary `bson:",inline" json:",inline" collection:"1"`
+		docbased.Primary `bson:",inline" json:",inline" collection:"1"`
 	}
 
-	doc := &DocWithObjectID{Primary: jsonbased.Primary{ID: primitive.D{{"1", "one"}, {"2", "two"}}}}
+	doc := &DocWithObjectID{Primary: docbased.New(primitive.E{"1", "one"}, primitive.E{"2", "two"})}
 
 	bytes, err := json.Marshal(doc)
 	assert.NoError(t, err)

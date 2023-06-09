@@ -13,7 +13,6 @@ import (
 
 // DeleteArray removes documents list from a database by their ids
 func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err error) {
-
 	targetV := reflect.ValueOf(target)
 	targetT := targetV.Type()
 
@@ -36,42 +35,43 @@ func (d *Database) DeleteArray(target interface{}, filters ...interface{}) (err 
 	zeroElem := reflect.Zero(targetSliceElemT)
 	targetLen := targetSliceV.Len()
 
+	collection, err := d.GetCollectionOf(zeroElem.Interface())
+	if err != nil {
+		return err
+	}
+
 	composed, err := query.Compose(filters...)
 	if err != nil {
-		return
+		return err
 	}
 
-	collection := d.GetCollectionOf(zeroElem.Interface())
-	ids := primitive.A{}
-	ctx := query.WithContext(d.Context(), composed)
+	if targetLen > 0 {
+		var ids primitive.A
+		for i := 0; i < targetLen; i++ {
+			elem := targetSliceV.Index(i)
+			elemID, err := base.GetID(elem.Interface())
+			if err != nil {
+				return err
+			}
 
-	for i := 0; i < targetLen; i++ {
-		elem := targetSliceV.Index(i)
-		ids = append(ids, base.GetID(elem.Interface()))
-	}
-
-	defer func() {
-		invokerr := composed.OnClose().Invoke(ctx, target)
-		if err == nil {
-			err = invokerr
+			ids = append(ids, elemID)
 		}
-
-		return
-	}()
-
-	if len(ids) == 0 {
-		return fmt.Errorf("can't delete zero elements")
+		composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
 	}
 
-	composed.And(primitive.M{"_id": primitive.M{"$in": ids}})
+	ctx := query.WithContext(d.Context(), composed)
+	m := composed.M()
+	opts := options.Delete()
 
-	result, err := collection.DeleteMany(ctx, composed.M(), options.Delete())
+	defer func() { _ = composed.OnClose().Invoke(ctx, target) }()
+
+	result, err := collection.DeleteMany(ctx, m, opts)
 	if err != nil {
-		return
+		return fmt.Errorf("while deleting array: %w", err)
 	}
 	if result.DeletedCount != int64(targetLen) {
-		err = fmt.Errorf("can't verify delete result: removed count mismatch %d != %d", result.DeletedCount, targetLen)
+		return fmt.Errorf("deleted count mismatch %d != %d", result.DeletedCount, targetLen)
 	}
 
-	return
+	return nil
 }

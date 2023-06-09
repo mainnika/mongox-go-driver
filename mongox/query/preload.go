@@ -1,11 +1,11 @@
 package query
 
-// Preloader is a filter to skip the result
+// Preloader is a filter to preload the result
 type Preloader interface {
 	Preload() (preloads []string)
 }
 
-// Preload is a simple implementation of the Skipper filter
+// Preload is a simple implementation of the Preloader filter
 type Preload []string
 
 var _ Preloader = Preload{}
